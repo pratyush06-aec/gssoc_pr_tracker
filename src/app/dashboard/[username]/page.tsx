@@ -79,7 +79,19 @@ export default async function DashboardPage({ params }: Props) {
             <span style={{ fontSize: 12, color: ds.inkMute2 }}>@{profile.github_id}</span>
           </div>
         </div>
-        {isTracked && <ManualSync compact />}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Link href={`/pr-tracker/${encodeURIComponent(decoded)}`} style={{
+            display: "inline-flex", alignItems: "center", gap: 5,
+            padding: "5px 12px", borderRadius: ds.rSm,
+            border: `1px solid ${ds.hairline}`,
+            fontSize: 12, fontWeight: 500, color: ds.inkMute,
+            textDecoration: "none", background: ds.canvas,
+            whiteSpace: "nowrap",
+          }}>
+            PR Tracker →
+          </Link>
+          {isTracked && <ManualSync compact />}
+        </div>
       </div>
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 20px 48px" }}>

@@ -9,6 +9,7 @@ const LINKS = [
   { label: "Features",    href: "#features"   },
   { label: "How it works",href: "#how-it-works"},
   { label: "Scoring",     href: "#scoring"     },
+  { label: "PR Tracker",  href: "/pr-tracker"  },
 ];
 
 const OWNER = {
