@@ -202,14 +202,14 @@ export function ScoringGuide() {
     <>
       <button
         onClick={() => setOpen(true)}
-        title="Scoring guide"
         style={{
-          display: "inline-flex", alignItems: "center", justifyContent: "center",
-          width: 28, height: 28,
-          borderRadius: "50%",
+          display: "inline-flex", alignItems: "center", gap: 5,
+          padding: "5px 11px",
+          borderRadius: ds.rSm,
           border: `1.5px solid ${ds.hairline}`,
           background: ds.canvas,
           color: ds.inkMute2,
+          fontSize: 12, fontWeight: 600,
           cursor: "pointer",
           transition: "all 0.15s",
           flexShrink: 0,
@@ -225,7 +225,8 @@ export function ScoringGuide() {
           e.currentTarget.style.background = ds.canvas;
         }}
       >
-        <Info size={13} />
+        <Info size={11} />
+        Points System
       </button>
 
       {mounted && open && <Modal onClose={() => setOpen(false)} />}

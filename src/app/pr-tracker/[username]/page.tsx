@@ -50,8 +50,9 @@ export default async function PRTrackerDashboard({ params }: Props) {
   if (errorCode) return <ErrorPage username={decoded} code={errorCode} />;
   if (!data) return notFound();
 
-  const fetchedDate = new Date(data.fetchedAt).toLocaleString("en-US", {
+  const fetchedDate = new Date(data.fetchedAt).toLocaleString("en-IN", {
     month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+    timeZone: "Asia/Kolkata",
   });
 
   return (

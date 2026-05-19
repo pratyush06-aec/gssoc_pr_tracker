@@ -59,14 +59,9 @@ export function GitHubProfileCard({ user, rank, totalPoints }: Props) {
 
       {/* Content */}
       <div style={{ padding: "0 24px 20px", position: "relative" }}>
-        {/* Avatar row — sits on banner edge */}
-        <div style={{
-          display: "flex", alignItems: "flex-end", justifyContent: "space-between",
-          flexWrap: "wrap", gap: 12,
-          marginTop: -28,
-          marginBottom: 14,
-        }}>
-          <div style={{ position: "relative", flexShrink: 0 }}>
+        {/* Avatar — sits on banner edge, alone */}
+        <div style={{ marginTop: -28, marginBottom: 14 }}>
+          <div style={{ position: "relative", display: "inline-block" }}>
             <div style={{
               width: 72, height: 72,
               borderRadius: "50%",
@@ -92,8 +87,42 @@ export function GitHubProfileCard({ user, rank, totalPoints }: Props) {
               {rm.emoji}
             </span>
           </div>
+        </div>
 
-          {/* Points box */}
+        {/* Name + handle + points — aligned together */}
+        <div style={{
+          display: "flex", alignItems: "flex-start", justifyContent: "space-between",
+          flexWrap: "wrap", gap: 12, marginBottom: 8,
+        }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
+              <span style={{ fontSize: 20, fontWeight: 700, color: ds.ink, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
+                {user.name ?? user.login}
+              </span>
+              <a
+                href={user.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13, color: ds.inkMute2, textDecoration: "none" }}
+              >
+                <GitHubIcon width={12} height={12} />
+                @{user.login}
+                <ExternalLink size={10} />
+              </a>
+            </div>
+
+            {/* Rank pill */}
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 5,
+              padding: "3px 10px", borderRadius: ds.rFull,
+              fontSize: 11, fontWeight: 700, letterSpacing: "0.01em",
+              background: rm.pill, color: rm.pillText, border: `1px solid ${rm.pillBorder}`,
+            }}>
+              {rm.emoji} {rank}
+            </span>
+          </div>
+
+          {/* Points box — aligned with user info */}
           <div style={{
             padding: "10px 18px",
             background: "rgba(62,207,142,0.06)",
@@ -111,35 +140,6 @@ export function GitHubProfileCard({ user, rank, totalPoints }: Props) {
             </p>
             <p style={{ margin: "3px 0 0", fontSize: 10, color: ds.inkMute2 }}>total earned</p>
           </div>
-        </div>
-
-        {/* Name + handle */}
-        <div style={{ marginBottom: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
-            <span style={{ fontSize: 20, fontWeight: 700, color: ds.ink, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
-              {user.name ?? user.login}
-            </span>
-            <a
-              href={user.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13, color: ds.inkMute2, textDecoration: "none" }}
-            >
-              <GitHubIcon width={12} height={12} />
-              @{user.login}
-              <ExternalLink size={10} />
-            </a>
-          </div>
-
-          {/* Rank pill */}
-          <span style={{
-            display: "inline-flex", alignItems: "center", gap: 5,
-            padding: "3px 10px", borderRadius: ds.rFull,
-            fontSize: 11, fontWeight: 700, letterSpacing: "0.01em",
-            background: rm.pill, color: rm.pillText, border: `1px solid ${rm.pillBorder}`,
-          }}>
-            {rm.emoji} {rank}
-          </span>
         </div>
 
         {/* Bio */}
