@@ -97,6 +97,7 @@ export default function Home() {
               placeholder="GitHub username…"
               autoFocus
               autoComplete="off"
+              suppressHydrationWarning
               style={{
                 width: "100%", height: 48,
                 paddingLeft: 38, paddingRight: 14,

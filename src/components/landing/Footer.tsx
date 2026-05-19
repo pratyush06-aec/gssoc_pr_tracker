@@ -27,9 +27,7 @@ const NAV_GROUPS = [
   {
     label: "Resources",
     links: [
-      { label: "GSSoC Official",  href: "https://gssoc.girlscript.org",             ext: true },
-      { label: "Leaderboard",     href: "https://gssoc.girlscript.org/leaderboard", ext: true },
-      { label: "GitHub Repo",     href: OWNER.github,                               ext: true },
+      { label: "GitHub Repo", href: OWNER.github, ext: true },
     ],
   },
 ];
@@ -57,7 +55,7 @@ export function Footer() {
               <span style={{ fontSize: 15, fontWeight: 700, color: ds.onDark, letterSpacing: "-0.02em" }}>GSSoC Tracker</span>
             </div>
             <p style={{ margin: "0 0 20px", fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: 240 }}>
-              Personal analytics dashboard for GirlScript Summer of Code 2026 participants.
+              Personal analytics dashboard for GSSoC 2026. Not affiliated with GirlScript Summer of Code.
             </p>
             <div style={{ display: "flex", gap: 8 }}>
               {[
@@ -158,13 +156,13 @@ export function Footer() {
           flexWrap: "wrap", gap: 12,
         }}>
           <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.2)" }}>
-            © 2026 GSSoC Tracker · Community tool, not affiliated with GirlScript Foundation
+            © 2026 GSSoC Tracker · Not affiliated with GirlScript Summer of Code or GirlScript Foundation
           </p>
           <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.2)" }}>
-            Data from{" "}
-            <a href="https://gssoc.girlscript.org" target="_blank" rel="noopener noreferrer"
+            Independent community tool built by{" "}
+            <a href={OWNER.github} target="_blank" rel="noopener noreferrer"
               style={{ color: "rgba(255,255,255,0.35)", textDecoration: "underline" }}>
-              gssoc.girlscript.org
+              {OWNER.name}
             </a>
           </p>
         </div>

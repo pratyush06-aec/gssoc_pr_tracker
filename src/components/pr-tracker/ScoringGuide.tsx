@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Info, X } from "lucide-react";
 import { ds, fontMono } from "@/lib/ds";
 
@@ -95,12 +96,110 @@ function Section({ title, rows, isMultiplier = false }: {
   );
 }
 
+function Modal({ onClose }: { onClose: () => void }) {
+  return createPortal(
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0,
+        background: "rgba(23,23,23,0.45)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+        zIndex: 9999,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 20,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: ds.canvas,
+          borderRadius: ds.rXl,
+          boxShadow: "0 24px 64px rgba(23,23,23,0.18)",
+          width: "100%", maxWidth: 420,
+          maxHeight: "90vh",
+          overflow: "hidden",
+          display: "flex", flexDirection: "column",
+          animation: "slideUp 0.2s ease",
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          padding: "18px 20px 16px",
+          borderBottom: `1px solid ${ds.hairlineCool}`,
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          flexShrink: 0,
+        }}>
+          <div>
+            <p style={{ margin: "0 0 3px", fontSize: 15, fontWeight: 700, color: ds.ink }}>
+              Scoring Guide
+            </p>
+            <p style={{ margin: 0, fontSize: 11, color: ds.inkMute2, fontFamily: fontMono }}>
+              Formula: 50 + (difficulty × quality) + type_bonus
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              width: 28, height: 28,
+              border: `1px solid ${ds.hairlineCool}`,
+              borderRadius: ds.rSm,
+              background: "transparent",
+              color: ds.inkMute2,
+              cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div style={{ padding: "20px", overflowY: "auto" }}>
+          <Section title="Base (every approved PR)" rows={BASE} />
+          <Section title="Difficulty" rows={DIFF} />
+          <Section title="Quality Multiplier" rows={QUAL} isMultiplier />
+          <Section title="Type Bonus" rows={TYPES} />
+
+          <div style={{
+            background: "rgba(62,207,142,0.05)",
+            border: "1px solid rgba(62,207,142,0.2)",
+            borderRadius: ds.rMd,
+            padding: "12px 14px",
+          }}>
+            <p style={{ margin: "0 0 6px", fontSize: 11, fontWeight: 700, color: ds.primaryDeep, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              Example
+            </p>
+            <p style={{ margin: "0 0 4px", fontSize: 12, color: ds.inkMute, fontFamily: fontMono }}>
+              gssoc:approved + level:advanced + quality:exceptional + type:devops
+            </p>
+            <p style={{ margin: 0, fontSize: 13, color: ds.ink, fontFamily: fontMono, fontWeight: 600 }}>
+              = 50 + (55 × 1.5) + 15 = <span style={{ color: ds.primaryDeep }}>147 pts</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(12px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+      `}</style>
+    </div>,
+    document.body
+  );
+}
+
 export function ScoringGuide() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <>
-      {/* Trigger button */}
       <button
         onClick={() => setOpen(true)}
         title="Scoring guide"
@@ -129,101 +228,7 @@ export function ScoringGuide() {
         <Info size={13} />
       </button>
 
-      {/* Modal backdrop */}
-      {open && (
-        <div
-          onClick={() => setOpen(false)}
-          style={{
-            position: "fixed", inset: 0,
-            background: "rgba(23,23,23,0.45)",
-            backdropFilter: "blur(4px)",
-            WebkitBackdropFilter: "blur(4px)",
-            zIndex: 100,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: 20,
-          }}
-        >
-          {/* Panel */}
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: ds.canvas,
-              borderRadius: ds.rXl,
-              boxShadow: "0 24px 64px rgba(23,23,23,0.18)",
-              width: "100%", maxWidth: 420,
-              maxHeight: "90vh",
-              overflow: "hidden",
-              display: "flex", flexDirection: "column",
-              animation: "slideUp 0.2s ease",
-            }}
-          >
-            {/* Header */}
-            <div style={{
-              padding: "18px 20px 16px",
-              borderBottom: `1px solid ${ds.hairlineCool}`,
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              flexShrink: 0,
-            }}>
-              <div>
-                <p style={{ margin: "0 0 3px", fontSize: 15, fontWeight: 700, color: ds.ink }}>
-                  Scoring Guide
-                </p>
-                <p style={{ margin: 0, fontSize: 11, color: ds.inkMute2, fontFamily: fontMono }}>
-                  Formula: 50 + (difficulty × quality) + type_bonus
-                </p>
-              </div>
-              <button
-                onClick={() => setOpen(false)}
-                style={{
-                  width: 28, height: 28,
-                  border: `1px solid ${ds.hairlineCool}`,
-                  borderRadius: ds.rSm,
-                  background: "transparent",
-                  color: ds.inkMute2,
-                  cursor: "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <X size={14} />
-              </button>
-            </div>
-
-            {/* Scrollable body */}
-            <div style={{ padding: "20px", overflowY: "auto" }}>
-              <Section title="Base (every approved PR)" rows={BASE} />
-              <Section title="Difficulty" rows={DIFF} />
-              <Section title="Quality Multiplier" rows={QUAL} isMultiplier />
-              <Section title="Type Bonus" rows={TYPES} />
-
-              {/* Example */}
-              <div style={{
-                background: "rgba(62,207,142,0.05)",
-                border: "1px solid rgba(62,207,142,0.2)",
-                borderRadius: ds.rMd,
-                padding: "12px 14px",
-              }}>
-                <p style={{ margin: "0 0 6px", fontSize: 11, fontWeight: 700, color: ds.primaryDeep, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                  Example
-                </p>
-                <p style={{ margin: "0 0 4px", fontSize: 12, color: ds.inkMute, fontFamily: fontMono }}>
-                  gssoc:approved + level:advanced + quality:exceptional + type:devops
-                </p>
-                <p style={{ margin: 0, fontSize: 13, color: ds.ink, fontFamily: fontMono, fontWeight: 600 }}>
-                  = 50 + (55 × 1.5) + 15 = <span style={{ color: ds.primaryDeep }}>147 pts</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <style>{`
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(12px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-      `}</style>
+      {mounted && open && <Modal onClose={() => setOpen(false)} />}
     </>
   );
 }
