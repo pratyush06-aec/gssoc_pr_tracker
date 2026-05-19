@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GSSoC PR Tracker
 
-## Getting Started
+> Not affiliated with GirlScript Summer of Code or GirlScript Foundation.
 
-First, run the development server:
+![GSSoC PR Tracker — Home](docs/screenshots/home.png)
+
+---
+
+## Why I built this
+
+If you've participated in GSSoC 2026, you already know the pain. The official leaderboard throws a "tracker not accessible" error half the time, and when it does load, it only counts PRs from officially registered GSSoC repos. So if you contributed to a repo that wasn't on their list, those PRs simply don't show up — even if they had all the right labels.
+
+I built this for myself. I wanted to see all my labelled PRs in one place, understand exactly how my score was calculated, and track how my rank moved over time without refreshing the official site every hour. Once it was working, I cleaned it up and made it public so other participants could use it too.
+
+---
+
+## What it does
+
+![PR Tracker Dashboard](docs/screenshots/dashboard.png)
+
+![PR Tracker Dashboard 2](docs/screenshots/dashboard2.png)
+
+You enter any GitHub username and the tracker pulls all their public PRs that carry GSSoC labels — `gssoc:approved`, `level:*`, `quality:*`, `type:*` — and calculates a score using the official formula:
+
+```
+Score = 50 + (difficulty × quality multiplier) + type bonus
+```
+
+It shows you your total points, rank trend, label distribution, and a full breakdown of every PR that contributed to your score. There's also a chart so you can see how your points grew over time.
+
+The key difference from the official tracker — **this one is not limited to registered repos**. It reads all your public PRs with GSSoC labels, so your score here might be higher than what the official leaderboard shows.
+
+---
+
+## Email alerts
+
+![Subscribe Form](docs/screenshots/subscribe.png)
+
+You can subscribe to get email alerts whenever your score or rank changes. Just hit "Get alerts" on the home page, enter your GitHub username and email, and choose whether you want to be notified on every score change or just get a daily morning digest.
+
+Everything is stored in this repo's `data/subscribers.json` — no external database. When your score changes, you get an email that shows exactly what changed, which PRs contributed, and a one-click unsubscribe link at the bottom.
+
+![Email Alert](docs/screenshots/email-alert.png)
+
+---
+
+## Important note
+
+This is an independent community tool. The scores shown here **may differ from the official GSSoC leaderboard** because this tracker counts PRs from all repos, not just the ones officially registered with GSSoC. For official standings, always refer to the GSSoC leaderboard directly.
+
+---
+
+## Running locally
+
+Clone the repo and install dependencies:
+
+```bash
+git clone https://github.com/PRODHOSH/gssoc-tracker
+cd gssoc-tracker
+npm install
+```
+
+Copy the example env file and fill in your values:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Then start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000` and you're good to go.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Built by
 
-## Learn More
+**Prodhosh V.S** — GSSoC 2026 Ambassador + Contributor, VIT Chennai
 
-To learn more about Next.js, take a look at the following resources:
+Built this to scratch my own itch, kept it because it turned out useful. If it helped you too, a star on the repo goes a long way.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+[![Star on GitHub](https://img.shields.io/github/stars/PRODHOSH/gssoc-tracker?style=social)](https://github.com/PRODHOSH/gssoc-tracker)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[GitHub](https://github.com/PRODHOSH) · [LinkedIn](https://www.linkedin.com/in/prodhoshvs)
