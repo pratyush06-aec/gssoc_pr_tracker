@@ -109,7 +109,11 @@ function readJson<T>(file: string, fallback: T): T {
 }
 
 function writeJson(file: string, data: unknown) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2) + "\n", "utf-8");
+  try {
+    fs.writeFileSync(file, JSON.stringify(data, null, 2) + "\n", "utf-8");
+  } catch (e) {
+    console.error(`❌ Failed to write ${file}:`, (e as Error).message);
+  }
 }
 
 // ── GSSoC API — fetch entire leaderboard once ──────────────────
@@ -140,12 +144,35 @@ async function fetchPage(url: string): Promise<{ results: RawParticipant[]; rate
         continue;
       }
 
-      if (!res.ok) throw new Error(`API returned ${res.status}`);
-      const raw = await res.json() as { participants?: RawParticipant[] } | RawParticipant[];
+      if (!res.ok) {
+        console.warn(`  ⚠️  HTTP ${res.status} on ${url} — skipping page`);
+        return { results: [], rateLimited: false };
+      }
+
+      let raw: unknown;
+      try {
+        raw = await res.json();
+      } catch {
+        console.warn(`  ⚠️  JSON parse error on ${url} — skipping page`);
+        return { results: [], rateLimited: false };
+      }
+
       const results: RawParticipant[] = Array.isArray(raw)
-        ? raw
-        : (raw as { participants?: RawParticipant[] }).participants ?? [];
+        ? (raw as RawParticipant[])
+        : ((raw as { participants?: RawParticipant[] }).participants ?? []);
       return { results, rateLimited: false };
+    } catch (e) {
+      const msg = (e as Error).message ?? String(e);
+      const isTimeout = msg.includes("abort") || msg.includes("timeout") || msg.includes("AbortError");
+      if (isTimeout && attempt < MAX_RETRIES) {
+        const wait = Math.min(5_000 * 2 ** attempt, 60_000);
+        console.warn(`  ⚠️  Timeout on ${url} — waiting ${Math.round(wait / 1000)}s before retry ${attempt + 1}/${MAX_RETRIES}…`);
+        await sleep(wait);
+        attempt++;
+        continue;
+      }
+      console.warn(`  ⚠️  Network error on ${url}: ${msg} — skipping page`);
+      return { results: [], rateLimited: false };
     } finally {
       clearTimeout(timer);
     }
@@ -236,19 +263,23 @@ async function main() {
             rank_change: existing ? snap.rank - existing.rank : 0, score_change: existing ? snap.score - existing.score : 0 });
           writeJson(HISTORY_FILE, history);
         }
-        if (ownerEmail && hasChanges && hasExisting && (scoreChanged || rankChanged)) {
-          const scoreDiff = snap.score - existing!.score;
-          const subject   = `GSSoC Alert: Score ${scoreDiff >= 0 ? "+" : ""}${scoreDiff} pts · Rank #${snap.rank}`;
-          const sent      = await sendEmail(ownerEmail, subject, buildChangeAlertHTML({ curr: snap, prev: existing! }));
-          newNotifs.push({ timestamp: new Date().toISOString(), type: "change_alert", subject, email_sent: sent,
-            changes: { rank_before: existing!.rank, rank_after: snap.rank, score_before: existing!.score, score_after: snap.score } });
-        }
-        if (ownerEmail && DAILY_MODE) {
-          const week = history.slice(-28), oldest = week[0];
-          const subject = `GSSoC Daily: Score ${snap.score.toLocaleString()} pts · Rank #${snap.rank}`;
-          const sent    = await sendEmail(ownerEmail, subject, buildDailyDigestHTML({ profile: snap, history_count: history.length,
-            score_7d: oldest ? snap.score - oldest.score : 0, rank_7d: oldest ? oldest.rank - snap.rank : 0 }));
-          newNotifs.push({ timestamp: new Date().toISOString(), type: "daily_digest", subject, email_sent: sent });
+        try {
+          if (ownerEmail && hasChanges && hasExisting && (scoreChanged || rankChanged)) {
+            const scoreDiff = snap.score - existing!.score;
+            const subject   = `GSSoC Alert: Score ${scoreDiff >= 0 ? "+" : ""}${scoreDiff} pts · Rank #${snap.rank}`;
+            const sent      = await sendEmail(ownerEmail, subject, buildChangeAlertHTML({ curr: snap, prev: existing! }));
+            newNotifs.push({ timestamp: new Date().toISOString(), type: "change_alert", subject, email_sent: sent,
+              changes: { rank_before: existing!.rank, rank_after: snap.rank, score_before: existing!.score, score_after: snap.score } });
+          }
+          if (ownerEmail && DAILY_MODE) {
+            const week = history.slice(-28), oldest = week[0];
+            const subject = `GSSoC Daily: Score ${snap.score.toLocaleString()} pts · Rank #${snap.rank}`;
+            const sent    = await sendEmail(ownerEmail, subject, buildDailyDigestHTML({ profile: snap, history_count: history.length,
+              score_7d: oldest ? snap.score - oldest.score : 0, rank_7d: oldest ? oldest.rank - snap.rank : 0 }));
+            newNotifs.push({ timestamp: new Date().toISOString(), type: "daily_digest", subject, email_sent: sent });
+          }
+        } catch (e) {
+          console.error(`  ❌ [${GITHUB_ID}] Email step failed:`, (e as Error).message);
         }
         continue;
       }
@@ -260,19 +291,23 @@ async function main() {
       const scChanged = sub.lastScore !== null && snap.score !== sub.lastScore;
       const rkChanged = sub.lastRank  !== null && snap.rank  !== sub.lastRank;
       console.log(`\n  ✅ [${sub.github}] Found rank #${snap.rank}, score ${snap.score}`);
-      if (sub.frequency === "on-change" && (scChanged || rkChanged)) {
-        const scoreDiff = snap.score - (sub.lastScore ?? snap.score);
-        const subject   = `GSSoC Alert: Score ${scoreDiff >= 0 ? "+" : ""}${scoreDiff} pts · Rank #${snap.rank}`;
-        await sendEmail(sub.email, subject, buildChangeAlertHTML({ curr: snap,
-          prev: { rank: sub.lastRank ?? snap.rank, score: sub.lastScore ?? snap.score, role_scores: {} }, unsubscribeUrl: unsubUrl }));
-        console.log(`  [${sub.github}] 📧 Change alert sent (${sub.lastScore} → ${snap.score})`);
-      } else if (DAILY_MODE && sub.frequency === "daily") {
-        const subject = `GSSoC Daily: ${snap.score.toLocaleString()} pts · Rank #${snap.rank}`;
-        await sendEmail(sub.email, subject, buildDailyDigestHTML({ profile: snap, history_count: history.length,
-          score_7d: 0, rank_7d: 0, unsubscribeUrl: unsubUrl }));
-        console.log(`  [${sub.github}] 📧 Daily digest sent`);
-      } else {
-        console.log(`  [${sub.github}] No change — no email needed`);
+      try {
+        if (sub.frequency === "on-change" && (scChanged || rkChanged)) {
+          const scoreDiff = snap.score - (sub.lastScore ?? snap.score);
+          const subject   = `GSSoC Alert: Score ${scoreDiff >= 0 ? "+" : ""}${scoreDiff} pts · Rank #${snap.rank}`;
+          await sendEmail(sub.email, subject, buildChangeAlertHTML({ curr: snap,
+            prev: { rank: sub.lastRank ?? snap.rank, score: sub.lastScore ?? snap.score, role_scores: {} }, unsubscribeUrl: unsubUrl }));
+          console.log(`  [${sub.github}] 📧 Change alert sent (${sub.lastScore} → ${snap.score})`);
+        } else if (DAILY_MODE && sub.frequency === "daily") {
+          const subject = `GSSoC Daily: ${snap.score.toLocaleString()} pts · Rank #${snap.rank}`;
+          await sendEmail(sub.email, subject, buildDailyDigestHTML({ profile: snap, history_count: history.length,
+            score_7d: 0, rank_7d: 0, unsubscribeUrl: unsubUrl }));
+          console.log(`  [${sub.github}] 📧 Daily digest sent`);
+        } else {
+          console.log(`  [${sub.github}] No change — no email needed`);
+        }
+      } catch (e) {
+        console.error(`  ❌ [${sub.github}] Email step failed:`, (e as Error).message);
       }
       updatedSubs.set(id, { ...sub, lastScore: snap.score, lastRank: snap.rank, lastChecked: new Date().toISOString() });
     }
@@ -316,23 +351,21 @@ async function main() {
     if (!await fetchAndProcess(pg, "targeted")) { rateLimitHit = true; }
   }
 
-  // ── Phase 2: sequential scan for unknown-rank profiles ────────
-  // Only runs if some profiles weren't found in targeted pages.
-  // These are subscribers who have never been synced before (lastRank = null).
+  // ── Phase 2: sequential scan for any remaining profiles ────────
+  // Covers two cases:
+  //   a) Unknown-rank subscribers (lastRank = null, never synced before)
+  //   b) Known-rank profiles that moved far beyond their ±3 page buffer
   if (!rateLimitHit && remaining.size > 0) {
-    const unknowns = [...remaining].filter(id => !knownRanks.has(id));
-    if (unknowns.length > 0) {
-      console.log(`\n📡 Phase 2 — sequential scan for unknown-rank profiles: [${unknowns.join(", ")}]`);
-      let seqPg    = 1;
-      const MAX_SEQ = 500; // up to 50 000 participants for unknowns
-      let seqCount  = 0;
-      while (!rateLimitHit && remaining.size > 0 && seqCount < MAX_SEQ) {
-        if (!fetchedPages.has(seqPg)) {
-          if (!await fetchAndProcess(seqPg, "sequential")) { rateLimitHit = true; break; }
-          seqCount++;
-        }
-        seqPg++;
+    console.log(`\n📡 Phase 2 — sequential scan for remaining: [${[...remaining].join(", ")}]`);
+    let seqPg    = 1;
+    const MAX_SEQ = 500; // up to 50 000 participants
+    let seqCount  = 0;
+    while (!rateLimitHit && remaining.size > 0 && seqCount < MAX_SEQ) {
+      if (!fetchedPages.has(seqPg)) {
+        if (!await fetchAndProcess(seqPg, "sequential")) { rateLimitHit = true; break; }
+        seqCount++;
       }
+      seqPg++;
     }
   }
 
