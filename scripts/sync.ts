@@ -113,25 +113,51 @@ function writeJson(file: string, data: unknown) {
 }
 
 // ── GSSoC API — fetch entire leaderboard once ──────────────────
-async function fetchLeaderboard(): Promise<RawParticipant[]> {
-  console.log("📡 Fetching GSSoC leaderboard…");
+async function fetchPage(url: string): Promise<RawParticipant[]> {
   const ac    = new AbortController();
   const timer = setTimeout(() => ac.abort(), FETCH_TIMEOUT);
   try {
-    const res = await fetch(GSSOC_API, {
+    const res = await fetch(url, {
       headers: { Accept: "application/json", "User-Agent": "GSSoC-Tracker/1.0" },
       signal: ac.signal,
     });
     if (!res.ok) throw new Error(`API returned ${res.status}`);
     const raw = await res.json() as { participants?: RawParticipant[] } | RawParticipant[];
-    const list: RawParticipant[] = Array.isArray(raw)
+    return Array.isArray(raw)
       ? raw
       : (raw as { participants?: RawParticipant[] }).participants ?? [];
-    console.log(`✅ Leaderboard fetched — ${list.length} participants`);
-    return list;
   } finally {
     clearTimeout(timer);
   }
+}
+
+async function fetchLeaderboard(): Promise<RawParticipant[]> {
+  console.log("📡 Fetching GSSoC leaderboard…");
+  const all: RawParticipant[] = [];
+  let page = 1;
+  const PAGE_SIZE = 100;
+
+  while (true) {
+    const url     = `${GSSOC_API}?page=${page}&limit=${PAGE_SIZE}`;
+    const results = await fetchPage(url);
+    if (results.length === 0) break;
+    all.push(...results);
+    console.log(`  Page ${page}: +${results.length} (total ${all.length})`);
+    // If the page wasn't full, we've hit the end
+    if (results.length < PAGE_SIZE) break;
+    page++;
+    // Safety cap — avoid infinite loops if API ignores pagination params
+    if (page > 20) break;
+  }
+
+  // Fallback: if pagination returned nothing extra, try a plain fetch
+  if (all.length === 0) {
+    const fallback = await fetchPage(GSSOC_API);
+    all.push(...fallback);
+  }
+
+  console.log(`✅ Leaderboard fetched — ${all.length} participants`);
+  return all;
 }
 
 function toSnapshot(p: RawParticipant): ProfileSnapshot {
@@ -190,20 +216,25 @@ async function main() {
 
   const rawOwner = list.find(p => (p.github_user ?? "").toLowerCase() === GITHUB_ID.toLowerCase());
   if (!rawOwner) {
-    console.error(`❌ Owner profile ${GITHUB_ID} not found in leaderboard`);
-    process.exit(1);
+    console.warn(`⚠️  Owner profile ${GITHUB_ID} not found in leaderboard (may be outside fetched range) — skipping owner update`);
   }
 
-  const current     = toSnapshot(rawOwner);
+  if (!rawOwner && existing === null) {
+    console.warn(`⚠️  No existing data for ${GITHUB_ID} either — owner section skipped entirely`);
+  }
+
+  const current     = rawOwner ? toSnapshot(rawOwner) : existing!;
   const hasExisting = existing !== null;
-  const scoreChanged = hasExisting && current.score !== existing.score;
-  const rankChanged  = hasExisting && current.rank  !== existing.rank;
-  const hasChanges   = !hasExisting || scoreChanged || rankChanged;
+  const scoreChanged = hasExisting && !!rawOwner && current.score !== existing.score;
+  const rankChanged  = hasExisting && !!rawOwner && current.rank  !== existing.rank;
+  const hasChanges   = !!rawOwner && (!hasExisting || scoreChanged || rankChanged);
 
-  console.log(`[${GITHUB_ID}] Score: ${existing?.score ?? "–"} → ${current.score}`);
-  console.log(`[${GITHUB_ID}] Rank:  #${existing?.rank ?? "–"} → #${current.rank}`);
+  if (rawOwner || hasExisting) {
+    console.log(`[${GITHUB_ID}] Score: ${existing?.score ?? "–"} → ${current?.score ?? "–"}`);
+    console.log(`[${GITHUB_ID}] Rank:  #${existing?.rank ?? "–"} → #${current?.rank ?? "–"}`);
+  }
 
-  writeJson(PROFILE_FILE, current);
+  if (rawOwner && current) writeJson(PROFILE_FILE, current);
 
   if (hasChanges) {
     history.push({
