@@ -131,32 +131,48 @@ async function fetchPage(url: string): Promise<RawParticipant[]> {
   }
 }
 
-async function fetchLeaderboard(): Promise<RawParticipant[]> {
+async function fetchLeaderboard(needed: Set<string>): Promise<RawParticipant[]> {
   console.log("📡 Fetching GSSoC leaderboard…");
   const all: RawParticipant[] = [];
+  const remaining = new Set([...needed].map(s => s.toLowerCase()));
   let page = 1;
   const PAGE_SIZE = 100;
+  const MAX_PAGES = 500; // up to 50 000 participants
 
-  while (true) {
+  while (page <= MAX_PAGES) {
     const url     = `${GSSOC_API}?page=${page}&limit=${PAGE_SIZE}`;
     const results = await fetchPage(url);
     if (results.length === 0) break;
     all.push(...results);
-    console.log(`  Page ${page}: +${results.length} (total ${all.length})`);
-    // If the page wasn't full, we've hit the end
-    if (results.length < PAGE_SIZE) break;
+
+    for (const p of results) {
+      const id = (p.github_user ?? "").toLowerCase();
+      if (remaining.has(id)) remaining.delete(id);
+    }
+
+    console.log(`  Page ${page}: +${results.length} (total ${all.length}) — still looking for: ${remaining.size > 0 ? [...remaining].join(", ") : "none ✅"}`);
+
+    // All required profiles found — no need to fetch further
+    if (remaining.size === 0) {
+      console.log("  All required profiles found — stopping early.");
+      break;
+    }
+
+    if (results.length < PAGE_SIZE) break; // last page
     page++;
-    // Safety cap — avoid infinite loops if API ignores pagination params
-    if (page > 20) break;
   }
 
-  // Fallback: if pagination returned nothing extra, try a plain fetch
+  // Fallback: if pagination returned nothing, try a plain fetch
   if (all.length === 0) {
     const fallback = await fetchPage(GSSOC_API);
     all.push(...fallback);
   }
 
-  console.log(`✅ Leaderboard fetched — ${all.length} participants`);
+  if (remaining.size > 0) {
+    console.warn(`⚠️  Could not find after ${all.length} participants: ${[...remaining].join(", ")}`);
+  }
+
+  console.log(`✅ Leaderboard fetched — ${all.length} participants across ${page} page(s)`);
   return all;
 }
 
@@ -200,10 +216,15 @@ async function main() {
   ensure();
   console.log(`\n🚀 GSSoC Tracker Sync — ${DAILY_MODE ? "Daily Digest" : "Regular"} mode\n`);
 
+  // Build the set of GitHub IDs we must locate before we can stop paginating
+  const subscribersEarly = readJson<Subscriber[]>(SUBSCRIBERS_FILE, []);
+  const needed = new Set<string>([GITHUB_ID, ...subscribersEarly.map(s => s.github)]);
+  console.log(`🎯 Need to find: ${[...needed].join(", ")}`);
+
   // Fetch leaderboard once — shared by owner + all subscribers
   let list: RawParticipant[];
   try {
-    list = await fetchLeaderboard();
+    list = await fetchLeaderboard(needed);
   } catch (e) {
     console.error("❌ Leaderboard fetch failed:", (e as Error).message);
     process.exit(1);
