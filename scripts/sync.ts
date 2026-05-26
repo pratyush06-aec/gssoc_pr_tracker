@@ -155,60 +155,6 @@ async function fetchPage(url: string): Promise<{ results: RawParticipant[]; rate
   return { results: [], rateLimited: true };
 }
 
-async function fetchLeaderboard(needed: Set<string>): Promise<RawParticipant[]> {
-  console.log("📡 Fetching GSSoC leaderboard…");
-  const all: RawParticipant[] = [];
-  const remaining = new Set([...needed].map(s => s.toLowerCase()));
-  let page = 1;
-  const PAGE_SIZE = 100;
-  const MAX_PAGES = 500; // up to 50 000 participants
-  const PAGE_DELAY = 500; // ms between pages to avoid rate limiting
-
-  while (page <= MAX_PAGES) {
-    if (page > 1) await sleep(PAGE_DELAY);
-
-    const url = `${GSSOC_API}?page=${page}&limit=${PAGE_SIZE}`;
-    const { results, rateLimited } = await fetchPage(url);
-
-    if (rateLimited) {
-      console.warn(`  ⚠️  Stopping pagination due to persistent rate limiting — using ${all.length} participants collected so far`);
-      break;
-    }
-    if (results.length === 0) break;
-
-    all.push(...results);
-
-    for (const p of results) {
-      const id = (p.github_user ?? "").toLowerCase();
-      if (remaining.has(id)) remaining.delete(id);
-    }
-
-    const stillLooking = remaining.size > 0 ? [...remaining].join(", ") : "none ✅";
-    console.log(`  Page ${page}: +${results.length} (total ${all.length}) — still looking for: ${stillLooking}`);
-
-    if (remaining.size === 0) {
-      console.log("  All required profiles found — stopping early.");
-      break;
-    }
-
-    if (results.length < PAGE_SIZE) break; // last page
-    page++;
-  }
-
-  // Fallback: if pagination returned nothing at all, try a plain fetch
-  if (all.length === 0) {
-    console.log("  Falling back to plain fetch…");
-    const { results } = await fetchPage(GSSOC_API);
-    all.push(...results);
-  }
-
-  if (remaining.size > 0) {
-    console.warn(`⚠️  Not found after scanning ${all.length} participants: ${[...remaining].join(", ")} (they may not be on the leaderboard yet)`);
-  }
-
-  console.log(`✅ Leaderboard fetched — ${all.length} participants across ${page} page(s)`);
-  return all;
-}
 
 function toSnapshot(p: RawParticipant): ProfileSnapshot {
   return {
@@ -250,150 +196,179 @@ async function main() {
   ensure();
   console.log(`\n🚀 GSSoC Tracker Sync — ${DAILY_MODE ? "Daily Digest" : "Regular"} mode\n`);
 
-  // Build the set of GitHub IDs we must locate before we can stop paginating
-  const subscribersEarly = readJson<Subscriber[]>(SUBSCRIBERS_FILE, []);
-  const needed = new Set<string>([GITHUB_ID, ...subscribersEarly.map(s => s.github)]);
-  console.log(`🎯 Need to find: ${[...needed].join(", ")}`);
+  // Load all state upfront
+  const existing    = readJson<ProfileSnapshot | null>(PROFILE_FILE, null);
+  const history     = readJson<HistoryEntry[]>(HISTORY_FILE, []);
+  const notifs      = readJson<NotificationLog[]>(NOTIFY_FILE, []);
+  const subscribers = readJson<Subscriber[]>(SUBSCRIBERS_FILE, []);
+  const ownerEmail  = process.env.NOTIFY_EMAIL ?? process.env.SMTP_USER;
 
-  // Fetch leaderboard once — shared by owner + all subscribers
-  let list: RawParticipant[];
-  try {
-    list = await fetchLeaderboard(needed);
-  } catch (e) {
-    console.error("❌ Leaderboard fetch failed:", (e as Error).message);
-    process.exit(1);
-  }
+  // Quick-lookup maps
+  const subByGithub = new Map(subscribers.map(s => [s.github.toLowerCase(), s]));
+  const updatedSubs = new Map(subscribers.map(s => [s.github.toLowerCase(), { ...s }]));
 
-  // ── 1. Owner (PRODHOSH) processing — unchanged behaviour ─────
-  const existing = readJson<ProfileSnapshot | null>(PROFILE_FILE, null);
-  const history  = readJson<HistoryEntry[]>(HISTORY_FILE, []);
-  const notifs   = readJson<NotificationLog[]>(NOTIFY_FILE, []);
-
-  const rawOwner = list.find(p => (p.github_user ?? "").toLowerCase() === GITHUB_ID.toLowerCase());
-  if (!rawOwner) {
-    console.warn(`⚠️  Owner profile ${GITHUB_ID} not found in leaderboard (may be outside fetched range) — skipping owner update`);
-  }
-
-  if (!rawOwner && existing === null) {
-    console.warn(`⚠️  No existing data for ${GITHUB_ID} either — owner section skipped entirely`);
-  }
-
-  const current     = rawOwner ? toSnapshot(rawOwner) : existing!;
-  const hasExisting = existing !== null;
-  const scoreChanged = hasExisting && !!rawOwner && current.score !== existing.score;
-  const rankChanged  = hasExisting && !!rawOwner && current.rank  !== existing.rank;
-  const hasChanges   = !!rawOwner && (!hasExisting || scoreChanged || rankChanged);
-
-  if (rawOwner || hasExisting) {
-    console.log(`[${GITHUB_ID}] Score: ${existing?.score ?? "–"} → ${current?.score ?? "–"}`);
-    console.log(`[${GITHUB_ID}] Rank:  #${existing?.rank ?? "–"} → #${current?.rank ?? "–"}`);
-  }
-
-  if (rawOwner && current) writeJson(PROFILE_FILE, current);
-
-  if (hasChanges) {
-    history.push({
-      timestamp:    current.timestamp,
-      rank:         current.rank,
-      score:        current.score,
-      role_scores:  current.role_scores,
-      rank_change:  existing ? current.rank - existing.rank : 0,
-      score_change: existing ? current.score - existing.score : 0,
-    });
-    writeJson(HISTORY_FILE, history);
-  }
+  // Track what we still need to find
+  const remaining = new Set<string>([
+    GITHUB_ID.toLowerCase(),
+    ...subscribers.map(s => s.github.toLowerCase()),
+  ]);
+  console.log(`🎯 Need to find: ${[...remaining].join(", ")}\n`);
 
   const newNotifs: NotificationLog[] = [];
-  const ownerEmail = process.env.NOTIFY_EMAIL ?? process.env.SMTP_USER;
+  let rawOwner: RawParticipant | null = null;
+  let totalFetched = 0;
+  let page = 1;
+  const PAGE_SIZE = 100;
+  const MAX_PAGES = 500;
+  const PAGE_DELAY = 500;
 
-  if (ownerEmail && hasChanges && hasExisting && (scoreChanged || rankChanged)) {
-    const scoreDiff = current.score - existing!.score;
-    const subject   = `GSSoC Alert: Score ${scoreDiff >= 0 ? "+" : ""}${scoreDiff} pts · Rank #${current.rank}`;
-    const html      = buildChangeAlertHTML({ curr: current, prev: existing! });
-    const sent      = await sendEmail(ownerEmail, subject, html);
-    newNotifs.push({
-      timestamp: new Date().toISOString(), type: "change_alert", subject, email_sent: sent,
-      changes: { rank_before: existing!.rank, rank_after: current.rank, score_before: existing!.score, score_after: current.score },
-    });
+  console.log("📡 Fetching GSSoC leaderboard — emailing subscribers as they are found…");
+
+  // ── Paginate + process immediately ────────────────────────────
+  outer: while (page <= MAX_PAGES) {
+    if (page > 1) await sleep(PAGE_DELAY);
+
+    const url = `${GSSOC_API}?page=${page}&limit=${PAGE_SIZE}`;
+    const { results, rateLimited } = await fetchPage(url);
+
+    if (rateLimited) {
+      console.warn(`\n⚠️  Rate limited — stopping at ${totalFetched} participants. Emails already sent for found profiles.`);
+      break;
+    }
+    if (results.length === 0) break;
+
+    totalFetched += results.length;
+
+    for (const p of results) {
+      const id = (p.github_user ?? "").toLowerCase();
+      if (!remaining.has(id)) continue;
+      remaining.delete(id);
+
+      // ── Owner found ────────────────────────────────────────
+      if (id === GITHUB_ID.toLowerCase()) {
+        rawOwner = p;
+        const snap        = toSnapshot(p);
+        const hasExisting = existing !== null;
+        const scoreChanged = hasExisting && snap.score !== existing.score;
+        const rankChanged  = hasExisting && snap.rank  !== existing.rank;
+        const hasChanges   = !hasExisting || scoreChanged || rankChanged;
+
+        console.log(`\n[${GITHUB_ID}] Found at rank #${snap.rank} — Score: ${existing?.score ?? "–"} → ${snap.score}`);
+        writeJson(PROFILE_FILE, snap);
+
+        if (hasChanges) {
+          history.push({
+            timestamp:    snap.timestamp,
+            rank:         snap.rank,
+            score:        snap.score,
+            role_scores:  snap.role_scores,
+            rank_change:  existing ? snap.rank - existing.rank : 0,
+            score_change: existing ? snap.score - existing.score : 0,
+          });
+          writeJson(HISTORY_FILE, history);
+        }
+
+        if (ownerEmail && hasChanges && hasExisting && (scoreChanged || rankChanged)) {
+          const scoreDiff = snap.score - existing!.score;
+          const subject   = `GSSoC Alert: Score ${scoreDiff >= 0 ? "+" : ""}${scoreDiff} pts · Rank #${snap.rank}`;
+          const html      = buildChangeAlertHTML({ curr: snap, prev: existing! });
+          const sent      = await sendEmail(ownerEmail, subject, html);
+          newNotifs.push({
+            timestamp: new Date().toISOString(), type: "change_alert", subject, email_sent: sent,
+            changes: { rank_before: existing!.rank, rank_after: snap.rank, score_before: existing!.score, score_after: snap.score },
+          });
+        }
+
+        if (ownerEmail && DAILY_MODE) {
+          const week     = history.slice(-28);
+          const oldest   = week[0];
+          const score_7d = oldest ? snap.score - oldest.score : 0;
+          const rank_7d  = oldest ? oldest.rank - snap.rank : 0;
+          const subject  = `GSSoC Daily: Score ${snap.score.toLocaleString()} pts · Rank #${snap.rank}`;
+          const html     = buildDailyDigestHTML({ profile: snap, history_count: history.length, score_7d, rank_7d });
+          const sent     = await sendEmail(ownerEmail, subject, html);
+          newNotifs.push({ timestamp: new Date().toISOString(), type: "daily_digest", subject, email_sent: sent });
+        }
+        continue;
+      }
+
+      // ── Subscriber found — email immediately ───────────────
+      const sub = subByGithub.get(id);
+      if (!sub) continue;
+
+      const snap      = toSnapshot(p);
+      const firstTime = sub.lastScore === null;
+      const scChanged = !firstTime && snap.score !== sub.lastScore;
+      const rkChanged = !firstTime && snap.rank  !== sub.lastRank;
+      const anyChange = scChanged || rkChanged;
+      const unsubUrl  = `${APP_URL}/api/unsubscribe?token=${sub.token}`;
+
+      console.log(`\n  ✅ [${sub.github}] Found at rank #${snap.rank}, score ${snap.score}`);
+
+      const shouldAlert  = sub.frequency === "on-change" && anyChange;
+      const shouldDigest = DAILY_MODE && sub.frequency === "daily";
+
+      if (shouldAlert) {
+        const scoreDiff = snap.score - (sub.lastScore ?? snap.score);
+        const subject   = `GSSoC Alert: Score ${scoreDiff >= 0 ? "+" : ""}${scoreDiff} pts · Rank #${snap.rank}`;
+        const html      = buildChangeAlertHTML({
+          curr: snap,
+          prev: { rank: sub.lastRank ?? snap.rank, score: sub.lastScore ?? snap.score, role_scores: {} },
+          unsubscribeUrl: unsubUrl,
+        });
+        await sendEmail(sub.email, subject, html);
+        console.log(`  [${sub.github}] 📧 Change alert sent (${sub.lastScore} → ${snap.score})`);
+      } else if (shouldDigest) {
+        const subject = `GSSoC Daily: ${snap.score.toLocaleString()} pts · Rank #${snap.rank}`;
+        const html    = buildDailyDigestHTML({
+          profile: snap, history_count: history.length,
+          score_7d: 0, rank_7d: 0, unsubscribeUrl: unsubUrl,
+        });
+        await sendEmail(sub.email, subject, html);
+        console.log(`  [${sub.github}] 📧 Daily digest sent`);
+      } else {
+        console.log(`  [${sub.github}] No email needed (no change)`);
+      }
+
+      updatedSubs.set(id, { ...sub, lastScore: snap.score, lastRank: snap.rank, lastChecked: new Date().toISOString() });
+    }
+
+    const stillLooking = remaining.size > 0 ? [...remaining].join(", ") : "none ✅";
+    console.log(`  Page ${page}: ${totalFetched} total — still looking for: ${stillLooking}`);
+
+    if (remaining.size === 0) {
+      console.log("  All profiles found — stopping early.");
+      break outer;
+    }
+    if (results.length < PAGE_SIZE) break;
+    page++;
   }
 
-  if (ownerEmail && DAILY_MODE) {
-    const week     = history.slice(-28);
-    const oldest   = week[0];
-    const score_7d = oldest ? current.score - oldest.score : 0;
-    const rank_7d  = oldest ? oldest.rank - current.rank : 0;
-    const subject  = `GSSoC Daily: Score ${current.score.toLocaleString()} pts · Rank #${current.rank}`;
-    const html     = buildDailyDigestHTML({ profile: current, history_count: history.length, score_7d, rank_7d });
-    const sent     = await sendEmail(ownerEmail, subject, html);
-    newNotifs.push({ timestamp: new Date().toISOString(), type: "daily_digest", subject, email_sent: sent });
+  // ── Fallback: if first page returned nothing ───────────────────
+  if (totalFetched === 0) {
+    console.warn("⚠️  No data fetched — API may be down");
+  }
+
+  // ── Owner fallback: use last saved data if not found ──────────
+  if (!rawOwner) {
+    if (existing) {
+      console.warn(`⚠️  ${GITHUB_ID} not found in leaderboard — keeping last saved data`);
+    } else {
+      console.warn(`⚠️  ${GITHUB_ID} not found and no saved data exists`);
+    }
+  }
+
+  // ── Subscribers not found ──────────────────────────────────────
+  for (const id of remaining) {
+    if (id === GITHUB_ID.toLowerCase()) continue;
+    const sub = subByGithub.get(id);
+    if (sub) console.log(`  [${sub.github}] Not found in leaderboard — skipping (may not have merged PRs yet)`);
   }
 
   if (newNotifs.length) writeJson(NOTIFY_FILE, [...notifs, ...newNotifs]);
+  if (subscribers.length > 0) writeJson(SUBSCRIBERS_FILE, [...updatedSubs.values()]);
 
-  // ── 2. Subscribers ────────────────────────────────────────────
-  const subscribers = readJson<Subscriber[]>(SUBSCRIBERS_FILE, []);
-  if (subscribers.length === 0) {
-    console.log("\n👥 No subscribers yet.");
-  } else {
-    console.log(`\n👥 Processing ${subscribers.length} subscriber(s)…`);
-  }
-
-  const updatedSubs: Subscriber[] = [];
-
-  for (const sub of subscribers) {
-    const raw = list.find(p => (p.github_user ?? "").toLowerCase() === sub.github.toLowerCase());
-    if (!raw) {
-      console.log(`  [${sub.github}] Not found in leaderboard — skipping`);
-      updatedSubs.push(sub);
-      continue;
-    }
-
-    const snap        = toSnapshot(raw);
-    const firstTime   = sub.lastScore === null;
-    const scChanged   = !firstTime && snap.score !== sub.lastScore;
-    const rkChanged   = !firstTime && snap.rank  !== sub.lastRank;
-    const anyChange   = scChanged || rkChanged;
-    const unsubUrl    = `${APP_URL}/api/unsubscribe?token=${sub.token}`;
-
-    const shouldAlert  = sub.frequency === "on-change" && anyChange;
-    const shouldDigest = DAILY_MODE && sub.frequency === "daily";
-
-    if (shouldAlert) {
-      const scoreDiff = snap.score - (sub.lastScore ?? snap.score);
-      const subject   = `GSSoC Alert: Score ${scoreDiff >= 0 ? "+" : ""}${scoreDiff} pts · Rank #${snap.rank}`;
-      const html      = buildChangeAlertHTML({
-        curr: snap,
-        prev: { rank: sub.lastRank ?? snap.rank, score: sub.lastScore ?? snap.score, role_scores: {} },
-        unsubscribeUrl: unsubUrl,
-      });
-      await sendEmail(sub.email, subject, html);
-      console.log(`  [${sub.github}] Change alert sent (score ${sub.lastScore} → ${snap.score})`);
-    } else if (shouldDigest) {
-      const subject = `GSSoC Daily: ${snap.score.toLocaleString()} pts · Rank #${snap.rank}`;
-      const html    = buildDailyDigestHTML({
-        profile:       snap,
-        history_count: history.length,
-        score_7d:      0,
-        rank_7d:       0,
-        unsubscribeUrl: unsubUrl,
-      });
-      await sendEmail(sub.email, subject, html);
-      console.log(`  [${sub.github}] Daily digest sent`);
-    } else {
-      console.log(`  [${sub.github}] Score ${snap.score}, rank #${snap.rank} — no email needed`);
-    }
-
-    updatedSubs.push({
-      ...sub,
-      lastScore:   snap.score,
-      lastRank:    snap.rank,
-      lastChecked: new Date().toISOString(),
-    });
-  }
-
-  if (subscribers.length > 0) writeJson(SUBSCRIBERS_FILE, updatedSubs);
-
-  console.log("\n✅ Sync complete");
+  console.log(`\n✅ Sync complete — scanned ${totalFetched} participants across ${page} page(s)`);
 }
 
 main().catch(e => { console.error("Fatal:", e); process.exit(1); });
