@@ -20,10 +20,14 @@ interface Props {
   user: GitHubUser;
   rank: PRRank;
   totalPoints: number;
+  badgeOverride?: { label: string; emoji: string; pill: string; pillText: string; pillBorder: string; glow: string };
+  pointsLabel?: string;
+  pointsColor?: string;
+  children?: React.ReactNode;
 }
 
-export function GitHubProfileCard({ user, rank, totalPoints }: Props) {
-  const rm = RANK_META[rank];
+export function GitHubProfileCard({ user, rank, totalPoints, badgeOverride, pointsLabel, pointsColor, children }: Props) {
+  const rm = badgeOverride ?? RANK_META[rank];
 
   return (
     <div style={{
@@ -118,7 +122,7 @@ export function GitHubProfileCard({ user, rank, totalPoints }: Props) {
               fontSize: 11, fontWeight: 700, letterSpacing: "0.01em",
               background: rm.pill, color: rm.pillText, border: `1px solid ${rm.pillBorder}`,
             }}>
-              {rm.emoji} {rank}
+              {rm.emoji} {rm.label}
             </span>
           </div>
 
@@ -133,9 +137,9 @@ export function GitHubProfileCard({ user, rank, totalPoints }: Props) {
             flexShrink: 0,
           }}>
             <p style={{ margin: "0 0 1px", fontSize: 10, fontWeight: 700, color: ds.inkMute2, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-              GSSoC Points
+              {pointsLabel ?? "GSSoC Points"}
             </p>
-            <p style={{ margin: 0, fontSize: 28, fontWeight: 800, color: ds.primaryDeep, fontFamily: fontMono, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+            <p style={{ margin: 0, fontSize: 28, fontWeight: 800, color: pointsColor ?? ds.primaryDeep, fontFamily: fontMono, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
               {totalPoints.toLocaleString()}
             </p>
             <p style={{ margin: "3px 0 0", fontSize: 10, color: ds.inkMute2 }}>total earned</p>
@@ -168,6 +172,7 @@ export function GitHubProfileCard({ user, rank, totalPoints }: Props) {
             <BookOpen size={11} /> <strong style={{ color: ds.inkMute, fontWeight: 600 }}>{user.public_repos}</strong> repos
           </span>
         </div>
+        {children}
       </div>
     </div>
   );

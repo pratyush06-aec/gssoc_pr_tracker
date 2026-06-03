@@ -1,14 +1,22 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://gssoc-tracker.vercel.app";
+const BASE = "https://gssoc-tracker.vercel.app";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: ["/api/"],
-    },
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/api/"],
+      },
+      {
+        // Block AI crawlers from hammering the API-heavy tracker pages
+        userAgent: ["GPTBot", "CCBot", "anthropic-ai", "Google-Extended"],
+        disallow: ["/pr-tracker/", "/mentor/", "/project-admin/", "/api/"],
+      },
+    ],
+    sitemap: `${BASE}/sitemap.xml`,
+    host: BASE,
   };
 }

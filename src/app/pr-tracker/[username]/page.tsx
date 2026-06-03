@@ -5,14 +5,38 @@ import { ds, fontMono } from "@/lib/ds";
 import { buildPRTrackerData } from "@/lib/pr-tracker";
 import { GitHubProfileCard } from "@/components/pr-tracker/GitHubProfileCard";
 import { StatsGrid } from "@/components/pr-tracker/StatsGrid";
-import { DifficultyChart } from "@/components/pr-tracker/DifficultyChart";
-import { PointsTimeline } from "@/components/pr-tracker/PointsTimeline";
-import { LabelsPieChart } from "@/components/pr-tracker/LabelsPieChart";
 import { PRTable } from "@/components/pr-tracker/PRTable";
+import { AnalyticsCharts } from "@/components/AnalyticsCharts";
 import { ScoringGuide } from "@/components/pr-tracker/ScoringGuide";
 import type { PRTrackerData } from "@/types/pr-tracker";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username } = await params;
+  const decoded = decodeURIComponent(username);
+  try {
+    const data = await buildPRTrackerData(decoded);
+    const display = data.user.name ?? data.user.login;
+    const title = `@${data.user.login} — ${data.totalPoints} pts · GSSoC 2026`;
+    const description = `${display} has earned ${data.totalPoints} GSSoC 2026 points from ${data.validPRs.length} merged PRs across ${data.uniqueRepos} repos. Rank: ${data.rank}.`;
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url: `https://gssoc-tracker.vercel.app/pr-tracker/${data.user.login}`,
+        images: [{ url: data.user.avatar_url, width: 400, height: 400, alt: `${data.user.login} avatar` }],
+      },
+      twitter: { card: "summary", title, description, images: [data.user.avatar_url] },
+      alternates: { canonical: `https://gssoc-tracker.vercel.app/pr-tracker/${data.user.login}` },
+    };
+  } catch {
+    return { title: "Contributor Stats | GSSoC PR Tracker" };
+  }
+}
 
 interface Props {
   params: Promise<{ username: string }>;
@@ -57,7 +81,6 @@ export default async function PRTrackerDashboard({ params }: Props) {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f5f5", fontFamily: "var(--font-sans)" }}>
-
       {/* ── Sticky nav ── */}
       <div style={{
         background: "rgba(255,255,255,0.9)",
@@ -171,22 +194,15 @@ export default async function PRTrackerDashboard({ params }: Props) {
         )}
 
         {/* Charts */}
-        {data.allPRs.length > 0 && (
+        {data.validPRs.length > 0 && (
           <>
             <SectionLabel>Analytics</SectionLabel>
-
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-              gap: 12,
-              marginBottom: 12,
-            }}>
-              <PointsTimeline validPRs={data.validPRs} />
-              <LabelsPieChart allPRs={data.allPRs} />
-            </div>
-
             <div style={{ marginBottom: 20 }}>
-              <DifficultyChart validPRs={data.validPRs} />
+              <AnalyticsCharts prs={data.validPRs.map((pr) => ({
+                levelKey: pr.difficulty,
+                qualityKey: pr.quality,
+                typeKeys: pr.typeBonuses,
+              }))} />
             </div>
           </>
         )}

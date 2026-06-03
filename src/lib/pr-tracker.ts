@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import type {
   GitHubUser,
   RawGitHubPR,
@@ -123,10 +124,8 @@ async function ghFetch(url: string): Promise<Response> {
   };
   const token = process.env.GH_TOKEN;
   if (token) headers.Authorization = `Bearer ${token}`;
-  return fetch(url, {
-    headers,
-    next: { revalidate: 300 },
-  });
+  // cache: "no-store" here — unstable_cache on the outer function handles deduplication
+  return fetch(url, { headers, cache: "no-store" });
 }
 
 /* ── Public API ──────────────────────────────────────────────── */
@@ -180,7 +179,7 @@ function repoFromUrl(repositoryUrl: string): { name: string; url: string } {
   return { name: `${owner}/${repo}`, url: `https://github.com/${owner}/${repo}` };
 }
 
-export async function buildPRTrackerData(username: string): Promise<PRTrackerData> {
+async function _buildPRTrackerData(username: string): Promise<PRTrackerData> {
   const [user, rawPRs] = await Promise.all([
     fetchGitHubUser(username),
     fetchGSSoCPRs(username),
@@ -233,3 +232,10 @@ export async function buildPRTrackerData(username: string): Promise<PRTrackerDat
     fetchedAt: new Date().toISOString(),
   };
 }
+
+// Cache per username for 5 minutes — shared across all requests on the same deployment
+export const buildPRTrackerData = unstable_cache(
+  async (username: string) => _buildPRTrackerData(username.toLowerCase()),
+  ["pr-tracker-data"],
+  { revalidate: 300 }
+);
