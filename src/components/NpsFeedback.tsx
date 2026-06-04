@@ -63,15 +63,6 @@ export function NpsFeedback() {
       }).toString(),
     }).catch(() => {});
 
-    // Also send email notification
-    try {
-      await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ score, comment: comment.trim() }),
-      });
-    } catch { /* email failure shouldn't break UX */ }
-
     localStorage.setItem(K_DONE, "1");
     setPhase("done");
     setTimeout(() => setVisible(false), 2200);
