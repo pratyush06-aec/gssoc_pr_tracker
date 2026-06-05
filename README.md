@@ -152,6 +152,16 @@ No database. No auth. No external services beyond GitHub API and Gmail.
 This is an independent community tool. Scores shown here may differ from the official GSSoC leaderboard because this tracker counts PRs from all repos, not just officially registered ones. For official standings, always check the GSSoC leaderboard directly.
 
 ---
+## Star History
+
+<a href="https://www.star-history.com/?repos=PRODHOSH%2Fgssoc-tracker&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=PRODHOSH/gssoc-tracker&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=PRODHOSH/gssoc-tracker&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=PRODHOSH/gssoc-tracker&type=date&legend=top-left" />
+ </picture>
+</a>
+
 
 ## Built by
 
