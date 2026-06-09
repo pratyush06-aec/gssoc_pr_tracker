@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   try {
     const data = await buildPRTrackerData(raw);
     return NextResponse.json(data, {
-      headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
+      headers: { "Cache-Control": "no-store" },
     });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "";

@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import { GSSOC_REPO_SET } from "@/data/gssoc-repos";
 import type {
   GitHubUser,
@@ -237,9 +236,6 @@ async function _buildPRTrackerData(username: string): Promise<PRTrackerData> {
   };
 }
 
-// Cache per username for 5 minutes — shared across all requests on the same deployment
-export const buildPRTrackerData = unstable_cache(
-  async (username: string) => _buildPRTrackerData(username.toLowerCase()),
-  ["pr-tracker-data"],
-  { revalidate: 300 }
-);
+export async function buildPRTrackerData(username: string) {
+  return _buildPRTrackerData(username.toLowerCase());
+}
