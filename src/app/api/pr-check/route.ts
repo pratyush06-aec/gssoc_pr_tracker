@@ -107,7 +107,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Points only apply for merged + approved + not flagged
-  const canScore = hasApproved && isMerged && !invalidLabel;
+  const canScore = hasApproved && isMerged && !invalidLabel && isOfficial;
 
   const difficultyLabel    = canScore ? (labelNames.find(l => l in DIFFICULTY_SCORES) ?? null) : null;
   const usedDefaultDiff    = canScore && !difficultyLabel;

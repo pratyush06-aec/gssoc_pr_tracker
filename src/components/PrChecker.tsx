@@ -69,10 +69,10 @@ const VERDICT_META: Record<Verdict, { color: string; bg: string; border: string;
     desc: "This PR was closed before being merged. It will not count toward your score.",
   },
   unofficial: {
-    color: "#d97706", bg: "rgba(217,119,6,0.07)", border: "rgba(217,119,6,0.2)",
-    icon: <AlertTriangle size={18} color="#d97706" />,
-    title: "Unofficial repo",
-    desc: "Merged and approved, so we count it here. However, this repo is not in the official GSSoC 2026 project list — it may not appear on the official leaderboard.",
+    color: "#dc2626", bg: "rgba(220,38,38,0.07)", border: "rgba(220,38,38,0.2)",
+    icon: <XCircle size={18} color="#dc2626" />,
+    title: "Not an official GSSoC 2026 repo",
+    desc: "This repo is not in the official GSSoC 2026 registered project list. This PR does not count toward your GSSoC score and will not appear on the leaderboard.",
   },
 };
 
@@ -396,12 +396,12 @@ export function PrChecker() {
 
             {/* Official repo */}
             <CheckRow
-              status={result.flags.isOfficial ? "pass" : "warn"}
+              status={result.flags.isOfficial ? "pass" : "fail"}
               label={result.flags.isOfficial
                 ? "Repo is in the official GSSoC 2026 list"
-                : "Repo is not in the official GSSoC 2026 list"}
+                : "Repo is NOT part of the official GSSoC 2026 registered projects"}
               detail={!result.flags.isOfficial
-                ? "We still count this PR here, but it may not appear on the official GSSoC leaderboard which only shows contributions to registered projects."
+                ? "This PR will not count toward your GSSoC score. Only PRs in officially registered GSSoC 2026 projects are eligible."
                 : undefined}
             />
 
@@ -466,11 +466,6 @@ export function PrChecker() {
               {result.verdict === "pending" && (
                 <p style={{ margin: "10px 0 0", fontSize: 12, color: ds.inkMute, lineHeight: 1.6 }}>
                   These points will be added to your score once this PR is merged.
-                </p>
-              )}
-              {result.verdict === "unofficial" && (
-                <p style={{ margin: "10px 0 0", fontSize: 12, color: "#92400e", lineHeight: 1.6 }}>
-                  Counted here. May not appear on the official leaderboard (unofficial repo).
                 </p>
               )}
             </div>
