@@ -171,7 +171,7 @@ function Modal({ onClose }: { onClose: () => void }) {
             title="Quality Multiplier"
             rows={QUAL}
             isMultiplier
-            footnote="Multiple quality labels? The lowest counts. quality:exceptional also needs a substantive mentor review comment (over 30 characters) — without one it falls back to ×1.0."
+            footnote="Multiple quality labels? The lowest counts."
           />
           <Section
             title="Type Bonus"

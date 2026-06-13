@@ -37,7 +37,6 @@ const TYPE_BONUSES: Record<string, number> = {
 const INVALID_LABELS = ["gssoc:invalid", "gssoc:spam", "gssoc:ai-slop"];
 const REQUIRED_LABEL = "gssoc:approved";
 const MAX_PR_POINTS = 175;
-const MIN_EXCEPTIONAL_REVIEW_LENGTH = 30;
 
 /* ── Rank thresholds ─────────────────────────────────────────── */
 
@@ -59,7 +58,7 @@ function lowestLabel(labelNames: string[], scores: Record<string, number>): stri
   return matched.reduce((lowest, l) => (scores[l] < scores[lowest] ? l : lowest));
 }
 
-function calcPoints(labelNames: string[], opts?: { downgradeExceptional?: boolean }) {
+function calcPoints(labelNames: string[]) {
   const hasInvalid = labelNames.some((l) => INVALID_LABELS.includes(l));
   const hasApproved = labelNames.includes(REQUIRED_LABEL);
 
@@ -80,10 +79,7 @@ function calcPoints(labelNames: string[], opts?: { downgradeExceptional?: boolea
   const difficultyScore = difficultyLabel ? DIFFICULTY_SCORES[difficultyLabel] : 20;
 
   const qualityLabel = lowestLabel(labelNames, QUALITY_MULTIPLIERS);
-  let qualityMultiplier = qualityLabel ? QUALITY_MULTIPLIERS[qualityLabel] : 1;
-  if (opts?.downgradeExceptional && qualityLabel === "quality:exceptional") {
-    qualityMultiplier = 1;
-  }
+  const qualityMultiplier = qualityLabel ? QUALITY_MULTIPLIERS[qualityLabel] : 1;
 
   const typeBonuses = labelNames.filter((l) => l in TYPE_BONUSES);
   const typeBonusTotal = typeBonuses.reduce((sum, l) => sum + TYPE_BONUSES[l], 0);
@@ -101,19 +97,6 @@ function calcPoints(labelNames: string[], opts?: { downgradeExceptional?: boolea
     points,
     isValid: true,
   };
-}
-
-// quality:exceptional requires a substantive review comment (>30 chars);
-// without one it falls back to the ×1.0 multiplier.
-async function hasSubstantiveReview(repo: string, prNumber: number): Promise<boolean> {
-  try {
-    const res = await ghFetch(`https://api.github.com/repos/${repo}/pulls/${prNumber}/reviews`);
-    if (!res.ok) return true; // can't verify — don't penalize on a failed lookup
-    const reviews = await res.json() as { body: string }[];
-    return reviews.some((r) => r.body && r.body.trim().length > MIN_EXCEPTIONAL_REVIEW_LENGTH);
-  } catch {
-    return true;
-  }
 }
 
 /* ── Streak calculation ──────────────────────────────────────── */
@@ -224,11 +207,7 @@ async function _buildPRTrackerData(username: string): Promise<PRTrackerData> {
     const isMerged = !!pr.pull_request?.merged_at;
     const { name: repo, url: repoUrl } = repoFromUrl(pr.repository_url);
 
-    let calc = calcPoints(labelNames);
-    if (calc.isValid && calc.quality === "quality:exceptional") {
-      const verified = await hasSubstantiveReview(repo, pr.number);
-      if (!verified) calc = calcPoints(labelNames, { downgradeExceptional: true });
-    }
+    const calc = calcPoints(labelNames);
 
     return {
       id: pr.id,
