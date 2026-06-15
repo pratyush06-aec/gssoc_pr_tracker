@@ -140,7 +140,7 @@ export default function TermsPage() {
         {/* Section 2 */}
         <Section icon={<AlertTriangle size={15} color="#fbbf24" />} title="How this aligns with the official tracker">
           <Note>
-            <strong>We now filter to the 424 officially registered GSSoC 2026 projects.</strong> Your score here reflects only PRs in repos on that list — the same set the official leaderboard uses.
+            <strong>We now filter to the 421 officially registered GSSoC 2026 projects.</strong> Your score here reflects only PRs in repos on that list — the same set the official leaderboard uses.
           </Note>
           <P>
             We fetch the project list directly from <Bright>gssoc.girlscript.org/api/projects</Bright> and check every PR against it. If a repo is not on the list, that PR does not appear in your tracker and does not count toward your score here.
