@@ -9,6 +9,7 @@ import { AnalyticsCharts } from "@/components/AnalyticsCharts";
 import { ScoringGuide } from "@/components/pr-tracker/ScoringGuide";
 import { TrackerNavbar } from "@/components/pr-tracker/TrackerNavbar";
 import { HomeFooter } from "@/components/home/HomeFooter";
+import { QuickFeedbackPopup } from "@/components/QuickFeedbackPopup";
 import type { PRTrackerData } from "@/types/pr-tracker";
 import type { Metadata } from "next";
 
@@ -102,6 +103,7 @@ export default async function PRTrackerDashboard({ params }: Props) {
       </main>
 
       <HomeFooter />
+      <QuickFeedbackPopup />
     </div>
   );
 }

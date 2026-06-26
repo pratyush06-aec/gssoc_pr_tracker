@@ -1,28 +1,55 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Bell, Settings } from "lucide-react";
+import { ArrowLeft, GitPullRequest, Info, RefreshCw, Star } from "lucide-react";
+import { LiveClock } from "@/components/pr-tracker/LiveClock";
 
 export function TrackerNavbar({ username }: { username: string }) {
+  // Format current date roughly to match the screenshot "26 Jun, 10:42 pm"
+  // Using a static/client hydration safe approach would require a client component, 
+  // but for a server component we can just omit it or render a generic status. 
+  // To avoid hydration errors, we'll just skip the dynamic time and use a "Live Status" indicator.
+
   return (
-    <header className="fixed top-0 w-full z-50 bg-pure-surface/80 border-b border-whisper-border backdrop-blur-md">
-      <div className="flex justify-between items-center w-full px-8 h-16 max-w-[1200px] mx-auto">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="font-display text-2xl font-extrabold text-primary flex items-center gap-2">
-            <ArrowLeft className="w-5 h-5 text-muted-steel hover:text-primary transition-colors" />
-            GSSoC_CONTRIBUTOR
+    <header className="bg-background/50 backdrop-blur-md w-full h-16 sticky top-0 z-50 border-b border-whisper-border">
+      <div className="flex justify-between items-center px-6 md:px-12 w-full h-full">
+        {/* Left Side */}
+        <div className="flex items-center gap-4 md:gap-6">
+          <Link href="/" className="flex items-center gap-2 text-sm text-muted-steel hover:text-ghost-white transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden md:inline">Search</span>
           </Link>
-          <nav className="hidden md:flex gap-6">
-            <Link href="/" className="font-mono text-[11px] font-bold uppercase tracking-widest text-muted-steel hover:text-primary transition-colors duration-200">Network</Link>
-            <Link href="#" className="font-mono text-[11px] font-bold uppercase tracking-widest text-primary border-b-2 border-primary pb-1">Registry</Link>
-            <Link href="/dashboard" className="font-mono text-[11px] font-bold uppercase tracking-widest text-muted-steel hover:text-primary transition-colors duration-200">Assets</Link>
-          </nav>
+          
+          <div className="w-px h-6 bg-whisper-border hidden md:block"></div>
+
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 text-primary p-1.5 rounded-md border border-primary/20">
+              <GitPullRequest className="w-4 h-4" />
+            </div>
+            <span className="font-display font-bold text-ghost-white hidden sm:inline">GSSoC PR Tracker</span>
+            
+            <div className="bg-pure-surface border border-whisper-border text-muted-steel px-3 py-1 rounded-full text-xs font-mono lowercase">
+              @{username}
+            </div>
+
+            <Link href="/terms" className="hidden lg:flex items-center gap-2 px-3 py-1.5 border border-whisper-border rounded-md text-xs text-muted-steel hover:text-ghost-white hover:bg-canvas-night/50 transition-colors">
+              <Info className="w-3.5 h-3.5" />
+              Points System
+            </Link>
+          </div>
         </div>
-        <div className="flex items-center gap-6">
-          <Link href={`/pr-tracker/${username}`} className="hidden md:block font-mono text-[11px] font-bold uppercase tracking-widest px-4 py-2 border border-whisper-border hover:bg-canvas-night/5 transition-all text-ghost-white rounded-md">
-            Refresh Data
+
+        {/* Right Side */}
+        <div className="flex items-center gap-3 md:gap-4">
+          <LiveClock />
+
+          <Link href={`/pr-tracker/${username}`} className="flex items-center gap-2 px-3 py-1.5 border border-whisper-border rounded-md text-xs font-medium text-ghost-white hover:bg-pure-surface transition-colors">
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Refresh</span>
           </Link>
-          <a href="https://github.com/PRODHOSH/gssoc-tracker" target="_blank" rel="noopener noreferrer" className="bg-primary text-white font-mono text-[11px] font-bold uppercase tracking-widest px-4 py-2 rounded-md hover:bg-primary-deep transition-all active:-translate-y-px flex items-center gap-2">
-            Star Repo
+
+          <a href="https://github.com/PRODHOSH/gssoc-tracker" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary rounded-md text-xs font-bold hover:bg-primary/20 transition-colors">
+            <Star className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Star</span>
           </a>
         </div>
       </div>

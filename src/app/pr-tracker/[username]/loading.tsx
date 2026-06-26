@@ -1,12 +1,11 @@
-import { ds } from "@/lib/ds";
+import React from "react";
 
 function Bone({ w = "100%", h = 16, r = 6 }: { w?: string | number; h?: number; r?: number }) {
   return (
     <div
-      className="skeleton"
+      className="animate-pulse bg-muted-steel/20"
       style={{
         width: w, height: h, borderRadius: r,
-        background: "#ebebeb",
       }}
     />
   );
@@ -14,88 +13,77 @@ function Bone({ w = "100%", h = 16, r = 6 }: { w?: string | number; h?: number; 
 
 export default function PRTrackerLoading() {
   return (
-    <div style={{ minHeight: "100vh", background: ds.canvasSoft, fontFamily: "var(--font-sans)" }}>
+    <div className="bg-background min-h-screen font-sans flex flex-col">
       {/* Nav skeleton */}
-      <div style={{
-        background: ds.canvas, borderBottom: `1px solid ${ds.hairlineCool}`,
-        padding: "0 20px", height: 52,
-        display: "flex", alignItems: "center", gap: 12,
-      }}>
-        <Bone w={60} h={14} />
-        <Bone w={120} h={14} />
+      <div className="bg-canvas-night border-b border-whisper-border px-6 md:px-12 h-16 flex justify-between items-center w-full sticky top-0 z-50">
+        <div className="flex items-center gap-8">
+          <Bone w={150} h={24} />
+          <Bone w={80} h={14} />
+        </div>
+        <div className="flex items-center gap-4">
+          <Bone w={100} h={32} />
+          <Bone w={80} h={32} />
+        </div>
       </div>
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 20px 48px" }}>
+      <div className="pt-24 pb-16 max-w-[1200px] mx-auto px-8 w-full flex-1">
         {/* Profile card skeleton */}
-        <div style={{
-          background: ds.canvas, border: `1px solid ${ds.hairlineCool}`,
-          borderRadius: ds.rLg, padding: "20px 24px",
-          display: "flex", gap: 20, marginBottom: 16,
-        }}>
-          <div className="skeleton" style={{ width: 68, height: 68, borderRadius: "50%", background: ds.canvasSoft, flexShrink: 0 }} />
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
-            <Bone w={200} h={22} />
-            <Bone w={100} h={18} />
-            <Bone w={320} h={14} />
-            <div style={{ display: "flex", gap: 12 }}>
-              <Bone w={80} h={12} />
-              <Bone w={80} h={12} />
-              <Bone w={80} h={12} />
+        <div className="bg-pure-surface border border-whisper-border rounded-xl p-8 flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-8">
+          <div className="flex items-center gap-6">
+            <div className="animate-pulse bg-muted-steel/20" style={{ width: 80, height: 80, borderRadius: "50%", flexShrink: 0 }} />
+            <div className="flex flex-col gap-3">
+              <Bone w={250} h={28} />
+              <Bone w={120} h={20} />
+              <div className="flex gap-4 mt-2">
+                <Bone w={60} h={14} />
+                <Bone w={80} h={14} />
+                <Bone w={70} h={14} />
+              </div>
             </div>
           </div>
-          <Bone w={110} h={80} />
+          <div className="hidden md:flex flex-col items-end gap-2">
+            <Bone w={60} h={12} />
+            <Bone w={120} h={40} />
+          </div>
         </div>
 
         {/* Stats grid skeleton */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10, marginBottom: 16 }}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} style={{
-              background: ds.canvas, border: `1px solid ${ds.hairlineCool}`,
-              borderRadius: ds.rLg, padding: "16px 18px",
-            }}>
-              <Bone w={30} h={30} r={8} />
-              <div style={{ marginTop: 10 }}>
-                <Bone w="70%" h={26} />
-                <div style={{ marginTop: 5 }}><Bone w="50%" h={12} /></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-pure-surface border border-whisper-border rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <Bone w={80} h={12} />
+                <Bone w={20} h={20} r={4} />
               </div>
+              <Bone w={60} h={32} />
+              <div className="mt-2"><Bone w={120} h={12} /></div>
             </div>
           ))}
         </div>
 
         {/* Charts skeleton */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: 12, marginBottom: 12 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {[0, 1].map((i) => (
-            <div key={i} style={{
-              background: ds.canvas, border: `1px solid ${ds.hairlineCool}`,
-              borderRadius: ds.rLg, padding: "18px 20px",
-            }}>
-              <Bone w={160} h={16} />
-              <div style={{ marginTop: 14 }}><Bone w="100%" h={200} /></div>
+            <div key={i} className="bg-pure-surface border border-whisper-border rounded-xl p-6">
+              <div className="mb-6"><Bone w={140} h={16} /></div>
+              <div className="flex justify-center"><Bone w={200} h={200} r={100} /></div>
             </div>
           ))}
         </div>
 
         {/* Table skeleton */}
-        <div style={{
-          background: ds.canvas, border: `1px solid ${ds.hairlineCool}`,
-          borderRadius: ds.rLg, overflow: "hidden",
-        }}>
-          <div style={{ padding: "14px 18px", borderBottom: `1px solid ${ds.hairlineCool}`, display: "flex", justifyContent: "space-between" }}>
-            <Bone w={120} h={16} />
-            <Bone w={200} h={32} />
+        <div className="bg-pure-surface border border-whisper-border rounded-xl overflow-hidden">
+          <div className="p-6 border-b border-whisper-border flex justify-between items-center">
+            <Bone w={150} h={20} />
+            <Bone w={250} h={36} />
           </div>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} style={{
-              padding: "12px 18px",
-              borderBottom: i < 5 ? `1px solid ${ds.hairlineCool}` : "none",
-              display: "flex", gap: 12, alignItems: "center",
-            }}>
-              <Bone w="30%" h={14} />
-              <Bone w="15%" h={14} />
-              <Bone w="20%" h={14} />
-              <Bone w="10%" h={14} />
-              <Bone w="10%" h={14} />
-              <Bone w="8%" h={14} />
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className={`p-5 flex gap-4 items-center ${i < 4 ? 'border-b border-whisper-border' : ''}`}>
+              <Bone w="35%" h={16} />
+              <Bone w="15%" h={16} />
+              <Bone w="20%" h={24} />
+              <Bone w="15%" h={16} />
+              <Bone w="15%" h={16} />
             </div>
           ))}
         </div>
