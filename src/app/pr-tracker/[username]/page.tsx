@@ -8,6 +8,7 @@ import { PRTable } from "@/components/pr-tracker/PRTable";
 import { AnalyticsCharts } from "@/components/AnalyticsCharts";
 import { ScoringGuide } from "@/components/pr-tracker/ScoringGuide";
 import { TrackerNavbar } from "@/components/pr-tracker/TrackerNavbar";
+import { ContributionHeatmap } from "@/components/pr-tracker/ContributionHeatmap";
 import { HomeFooter } from "@/components/home/HomeFooter";
 import { QuickFeedbackPopup } from "@/components/QuickFeedbackPopup";
 import type { PRTrackerData } from "@/types/pr-tracker";
@@ -88,11 +89,10 @@ export default async function PRTrackerDashboard({ params }: Props) {
 
         {/* Charts */}
         {data.validPRs.length > 0 && (
-          <AnalyticsCharts prs={data.validPRs.map((pr) => ({
-            levelKey: pr.difficulty,
-            qualityKey: pr.quality,
-            typeKeys: pr.typeBonuses,
-          }))} />
+          <>
+            <ContributionHeatmap prs={data.validPRs} streak={data.streak} />
+            <AnalyticsCharts prs={data.validPRs} />
+          </>
         )}
 
         {/* PR Table */}

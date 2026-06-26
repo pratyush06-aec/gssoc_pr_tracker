@@ -8,14 +8,14 @@
   --color-ghost-white: #FAFAFA;
   --color-muted-steel: #A1A1AA;
   --color-whisper-border: rgba(255, 255, 255, 0.08);
-  --color-primary: #E11D48;
-  --color-primary-deep: #b80035;
+  --color-primary: #10B981;
+  --color-primary-deep: #047857;
   --color-ink: #FAFAFA;
   --color-ink-mute: #A1A1AA;
   --color-background: #09090B;
   --color-surface: #18181B;
   --color-border: rgba(255, 255, 255, 0.08);
-  --color-ring: #E11D48;
+  --color-ring: #10B981;
   --radius: 12px;
   --font-sans: "Satoshi", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;

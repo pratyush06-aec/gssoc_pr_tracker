@@ -2,19 +2,15 @@
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  LineChart, Line
 } from "recharts";
-
-export interface AnalyticsPR {
-  levelKey: string | null;
-  qualityKey: string | null;
-  typeKeys: string[];
-}
+import type { TrackedPR } from "@/types/pr-tracker";
 
 const LEVEL_COLORS: Record<string, string> = {
-  "level:beginner":     "#b80035", // Primary
-  "level:intermediate": "#e11d48", // Primary container
-  "level:advanced":     "#ffb3b6", // Primary fixed dim
-  "level:critical":     "#93000a", // Error container
+  "level:beginner":     "#059669",
+  "level:intermediate": "#10b981",
+  "level:advanced":     "#6ee7b7",
+  "level:critical":     "#064e3b",
 };
 const LEVEL_LABELS: Record<string, string> = {
   "level:beginner": "Beginner", "level:intermediate": "Intermediate",
@@ -22,7 +18,7 @@ const LEVEL_LABELS: Record<string, string> = {
 };
 
 const QUALITY_COLORS: Record<string, string> = {
-  "quality:exceptional": "#b80035",
+  "quality:exceptional": "#10b981",
   "quality:clean":       "#E4E4E7",
   "none":                "#27272a",
 };
@@ -31,9 +27,9 @@ const QUALITY_LABELS: Record<string, string> = {
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  "type:feature":       "#b80035",
-  "type:bug":           "#e11d48",
-  "type:docs":          "#ffb3b6",
+  "type:feature":       "#059669",
+  "type:bug":           "#10b981",
+  "type:docs":          "#6ee7b7",
   "type:testing":       "#E4E4E7",
   "type:refactor":      "#a1a1aa",
   "type:design":        "#71717a",
@@ -77,10 +73,10 @@ function ChartCard({ title, children, metric }: { title: string; children: React
   );
 }
 
-function LevelChart({ prs }: { prs: AnalyticsPR[] }) {
+function LevelChart({ prs }: { prs: TrackedPR[] }) {
   const counts: Record<string, number> = {};
   for (const pr of prs) {
-    const k = pr.levelKey ?? "level:beginner";
+    const k = pr.difficulty ?? "level:beginner";
     counts[k] = (counts[k] ?? 0) + 1;
   }
   const ORDER = ["level:beginner", "level:intermediate", "level:advanced", "level:critical"];
@@ -108,10 +104,10 @@ function LevelChart({ prs }: { prs: AnalyticsPR[] }) {
   );
 }
 
-function QualityChart({ prs }: { prs: AnalyticsPR[] }) {
+function QualityChart({ prs }: { prs: TrackedPR[] }) {
   const counts: Record<string, number> = { "quality:exceptional": 0, "quality:clean": 0, "none": 0 };
   for (const pr of prs) {
-    const k = pr.qualityKey ?? "none";
+    const k = pr.quality ?? "none";
     counts[k] = (counts[k] ?? 0) + 1;
   }
   const data = Object.entries(counts)
@@ -138,10 +134,10 @@ function QualityChart({ prs }: { prs: AnalyticsPR[] }) {
   );
 }
 
-function TypeChart({ prs }: { prs: AnalyticsPR[] }) {
+function TypeChart({ prs }: { prs: TrackedPR[] }) {
   const counts: Record<string, number> = {};
   for (const pr of prs) {
-    for (const k of pr.typeKeys) {
+    for (const k of pr.typeBonuses) {
       counts[k] = (counts[k] ?? 0) + 1;
     }
   }
@@ -162,24 +158,97 @@ function TypeChart({ prs }: { prs: AnalyticsPR[] }) {
           formatter={(v) => [`${v} PR${Number(v) !== 1 ? "s" : ""}`, ""]} 
         />
         <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={20}>
-          {data.map((e) => <Cell key={e.key} fill={TYPE_COLORS[e.key] ?? "#b80035"} />)}
+          {data.map((e) => <Cell key={e.key} fill={TYPE_COLORS[e.key] ?? "#10b981"} />)}
         </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
 }
 
-export function AnalyticsCharts({ prs }: { prs: AnalyticsPR[] }) {
+function GrowthChart({ prs }: { prs: TrackedPR[] }) {
+  if (!prs.length) return <Empty label="No data to show" />;
+
+  // Sort PRs by date ascending
+  const sorted = [...prs].sort((a, b) => {
+    const da = a.mergedAt ? new Date(a.mergedAt).getTime() : new Date(a.createdAt).getTime();
+    const db = b.mergedAt ? new Date(b.mergedAt).getTime() : new Date(b.createdAt).getTime();
+    return da - db;
+  });
+
+  const data: { dateStr: string; timestamp: number; cumulativePoints: number; cumulativePRs: number }[] = [];
+  let points = 0;
+  let count = 0;
+
+  for (const pr of sorted) {
+    const t = pr.mergedAt ? new Date(pr.mergedAt) : new Date(pr.createdAt);
+    points += pr.points;
+    count += 1;
+    data.push({
+      dateStr: t.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+      timestamp: t.getTime(),
+      cumulativePoints: points,
+      cumulativePRs: count,
+    });
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <h4 className="text-xs font-mono font-bold text-muted-steel uppercase tracking-widest mb-4">Cumulative Points</h4>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={data} margin={{ left: -20, right: 16, top: 4, bottom: 4 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
+            <XAxis dataKey="dateStr" tick={{ fontSize: 11, fill: "#A1A1AA" }} axisLine={false} tickLine={false} minTickGap={30} />
+            <YAxis tick={{ fontSize: 11, fill: "#A1A1AA" }} axisLine={false} tickLine={false} />
+            <Tooltip 
+              contentStyle={{ background: "#18181B", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", fontSize: "12px", color: "#FAFAFA" }} 
+              itemStyle={{ color: "#10b981", fontWeight: "bold" }}
+              labelStyle={{ color: "#A1A1AA", marginBottom: "4px" }}
+            />
+            <Line type="stepAfter" dataKey="cumulativePoints" name="Points" stroke="#10b981" strokeWidth={2} dot={{ r: 3, fill: "#10b981", strokeWidth: 0 }} activeDot={{ r: 5 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="pt-6 border-t border-whisper-border">
+        <h4 className="text-xs font-mono font-bold text-muted-steel uppercase tracking-widest mb-4">Cumulative PRs Merged</h4>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={data} margin={{ left: -20, right: 16, top: 4, bottom: 4 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
+            <XAxis dataKey="dateStr" tick={{ fontSize: 11, fill: "#A1A1AA" }} axisLine={false} tickLine={false} minTickGap={30} />
+            <YAxis tick={{ fontSize: 11, fill: "#A1A1AA" }} axisLine={false} tickLine={false} allowDecimals={false} />
+            <Tooltip 
+              contentStyle={{ background: "#18181B", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", fontSize: "12px", color: "#FAFAFA" }} 
+              itemStyle={{ color: "#6ee7b7", fontWeight: "bold" }}
+              labelStyle={{ color: "#A1A1AA", marginBottom: "4px" }}
+            />
+            <Line type="stepAfter" dataKey="cumulativePRs" name="Total PRs" stroke="#6ee7b7" strokeWidth={2} dot={{ r: 3, fill: "#6ee7b7", strokeWidth: 0 }} activeDot={{ r: 5 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+export function AnalyticsCharts({ prs }: { prs: TrackedPR[] }) {
   if (!prs.length) return null;
   return (
     <div className="flex flex-col gap-6 mb-16">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ChartCard title="PRs by Difficulty" metric="SYSTEM_METRIC: LVL_DIST">
-          <LevelChart prs={prs} />
-        </ChartCard>
-        <ChartCard title="Quality Distribution" metric="SYSTEM_METRIC: Q_DIST">
-          <QualityChart prs={prs} />
-        </ChartCard>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6">
+          <ChartCard title="PRs by Difficulty" metric="SYSTEM_METRIC: LVL_DIST">
+            <LevelChart prs={prs} />
+          </ChartCard>
+          <ChartCard title="Quality Distribution" metric="SYSTEM_METRIC: Q_DIST">
+            <QualityChart prs={prs} />
+          </ChartCard>
+        </div>
+        
+        <div className="flex flex-col gap-6">
+          <ChartCard title="Contribution Growth" metric="SYSTEM_METRIC: GROWTH">
+            <GrowthChart prs={prs} />
+          </ChartCard>
+        </div>
       </div>
       <ChartCard title="PR Type Breakdown" metric="SYSTEM_METRIC: TYPE_DIST">
         <TypeChart prs={prs} />
