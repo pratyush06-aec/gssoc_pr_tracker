@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mentor Terminal | Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@400,700,800&f[]=jet-brains-mono@400,500,700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@100..900&family=JetBrains+Mono:wght@100..900&family=Satoshi:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "canvas-night": "#09090B",
+                    "on-background": "#1a1c1c",
+                    "pure-surface": "#FFFFFF",
+                    "on-primary-fixed-variant": "#920028",
+                    "on-secondary-container": "#63646c",
+                    "primary": "#b80035",
+                    "on-tertiary-fixed-variant": "#005142",
+                    "on-primary": "#ffffff",
+                    "on-primary-container": "#fffaf9",
+                    "inverse-on-surface": "#f0f1f1",
+                    "primary-fixed-dim": "#ffb3b6",
+                    "error": "#ba1a1a",
+                    "outline": "#906f70",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed": "#1a1b22",
+                    "background": "#f9f9f9",
+                    "inverse-primary": "#ffb3b6",
+                    "surface-dim": "#dadada",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-surface": "#1a1c1c",
+                    "surface-container": "#eeeeee",
+                    "outline-variant": "#e5bdbe",
+                    "tertiary-container": "#00836c",
+                    "surface-container-low": "#f3f3f3",
+                    "primary-fixed": "#ffdada",
+                    "secondary-container": "#e3e1ec",
+                    "on-error": "#ffffff",
+                    "whisper-border": "#E4E4E7",
+                    "surface": "#f9f9f9",
+                    "tertiary": "#006855",
+                    "secondary-fixed": "#e3e1ec",
+                    "on-tertiary-fixed": "#002019",
+                    "on-tertiary-container": "#eefff7",
+                    "tertiary-fixed-dim": "#74d8bd",
+                    "on-surface-variant": "#5c3f40",
+                    "secondary-fixed-dim": "#c6c5cf",
+                    "surface-container-highest": "#e2e2e2",
+                    "secondary": "#5d5e66",
+                    "surface-variant": "#e2e2e2",
+                    "surface-bright": "#f9f9f9",
+                    "tertiary-fixed": "#90f5d9",
+                    "on-primary-fixed": "#40000c",
+                    "muted-steel": "#71717A",
+                    "inverse-surface": "#2f3131",
+                    "primary-container": "#e11d48",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#46464e",
+                    "surface-container-high": "#e8e8e8",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#be0037"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "container-max": "1200px",
+                    "stack-lg": "32px",
+                    "gutter": "24px",
+                    "stack-md": "16px",
+                    "margin-page": "32px",
+                    "stack-xl": "64px"
+            },
+            "fontFamily": {
+                    "metadata-code": ["JetBrains Mono"],
+                    "label-caps": ["JetBrains Mono"],
+                    "body-md": ["Satoshi"],
+                    "headline-lg-mobile": ["Cabinet Grotesk"],
+                    "headline-lg": ["Cabinet Grotesk"],
+                    "display-xl": ["Cabinet Grotesk"],
+                    "body-sm": ["Satoshi"]
+            },
+            "fontSize": {
+                    "metadata-code": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #FAFAFA;
+            color: #1a1c1c;
+            font-family: 'Satoshi', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .diffused-shadow {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f3f3f3;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e11d48;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-pure-surface/80 dark:bg-canvas-night/80 backdrop-blur-md border-b border-whisper-border dark:border-on-surface-variant">
+<div class="flex justify-between items-center w-full px-margin-page max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-stack-lg">
+<span class="font-display-xl text-headline-lg tracking-tighter text-primary">MENTOR_TERMINAL</span>
+<div class="hidden md:flex gap-stack-md">
+<a class="font-metadata-code text-metadata-code uppercase tracking-widest text-secondary hover:text-on-surface transition-colors pb-4" href="#">Network</a>
+<a class="font-metadata-code text-metadata-code uppercase tracking-widest text-primary border-b-2 border-primary pb-4" href="#">Assets</a>
+<a class="font-metadata-code text-metadata-code uppercase tracking-widest text-secondary hover:text-on-surface transition-colors pb-4" href="#">Registry</a>
+<a class="font-metadata-code text-metadata-code uppercase tracking-widest text-secondary hover:text-on-surface transition-colors pb-4" href="#">Nodes</a>
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="material-symbols-outlined text-secondary hover:bg-surface-container-low p-2 transition-all duration-200">notifications</button>
+<button class="material-symbols-outlined text-secondary hover:bg-surface-container-low p-2 transition-all duration-200">terminal</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-whisper-border">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a high-ranking technical mentor, focused expression, cinematic side-lighting with a cool blue-toned background and sharp crimson accents. The style is minimalist and corporate, emphasizing authority and technical expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBl7y5U_kG5lM16bN8uWQhOgCZ_LPlKMz7h64iDxB7XGtPn1Ej6NL0B5pXXxGzGLLc_eeud_ogSl-rk-QDtUJ_lXEwQqOvcAP7cZumJD9KPvliA64YCxTkbG1QYbBmYaVj9IRF5sIrxbL-8aIrkmV9YAopblOIBQteIMYevGm-uaqKih2ifAXfgZJGZJbqlNQha8QsrruiBHAn--VDbsaTKfjTYgEemNF2-nfFymD0O1xqcOodvPgUYoWwjThH_zJK_u_NTvE5D6gC-"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="flex-grow pt-24 pb-stack-xl px-margin-page max-w-container-max mx-auto w-full">
+<!-- Header Profile Card -->
+<header class="bg-pure-surface border border-whisper-border diffused-shadow p-stack-lg mb-stack-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-stack-md">
+<div class="flex items-center gap-stack-md">
+<div class="relative">
+<div class="w-16 h-16 rounded-full border-2 border-primary p-0.5">
+<img class="w-full h-full rounded-full object-cover" data-alt="A macro close-up of a sophisticated mentor profile avatar, featuring a stylized geometric representation of a human head, glowing soft white lines against a dark crimson backdrop. Clinical and precise artistic style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCupCEDDXP10x-ZB0yO7ypU8646GQ8UZ1EOwjumNBOT_YKFcebRVTT0AJ7hWSbEk7jhYNUmSjC_mR0LoPifHihcKZlm1nEShWffgmil9WNfmwWlLVpig1uEQ6heeZu3js4d8W4jryZvj_wmVbgrx5_D1t4CE186oUItBjCS05jP7yHigQelA-KezgvWSodurmAFbB478YUMsBgEMcWWKeN_22CgaLfigOKppdyFjKkxPvIBH-J6iwDXeF6UBhpodA7nlJYLelPonhJD"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-on-primary text-[10px] px-1.5 py-0.5 font-metadata-code font-bold uppercase tracking-tighter">LEAD</div>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-background">@mentor_lead</h1>
+<div class="flex gap-stack-md mt-1">
+<span class="font-metadata-code text-metadata-code text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">stars</span> 4,850 POINTS
+                        </span>
+<span class="font-metadata-code text-metadata-code text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">fact_check</span> 142 REVIEWS
+                        </span>
+</div>
+</div>
+</div>
+<div class="flex gap-stack-sm w-full md:w-auto">
+<button class="flex-1 md:flex-none border border-primary text-primary px-stack-md py-stack-sm font-metadata-code text-metadata-code uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-all duration-300 active:translate-y-px">Sync Data</button>
+<button class="flex-1 md:flex-none bg-primary text-on-primary px-stack-md py-stack-sm font-metadata-code text-metadata-code uppercase tracking-widest hover:bg-on-primary-fixed-variant transition-all duration-300 active:translate-y-px">Export Stats</button>
+</div>
+</header>
+<!-- Stats Grid (Asymmetrical) -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-stack-lg">
+<div class="md:col-span-5 bg-pure-surface border border-whisper-border p-stack-lg diffused-shadow flex flex-col justify-between group">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary">TOTAL PRS REVIEWED</span>
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">analytics</span>
+</div>
+<div class="mt-stack-md">
+<span class="font-display-xl text-display-xl text-on-background leading-none">142</span>
+<p class="font-body-sm text-body-sm text-secondary mt-2">+12% from last cycle</p>
+</div>
+</div>
+<div class="md:col-span-4 bg-pure-surface border border-whisper-border p-stack-lg diffused-shadow flex flex-col justify-between group">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary">MENTOR POINTS</span>
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">military_tech</span>
+</div>
+<div class="mt-stack-md">
+<span class="font-display-xl text-display-xl text-on-background leading-none">4,850</span>
+<p class="font-body-sm text-body-sm text-secondary mt-2">Ranked #04 globally</p>
+</div>
+</div>
+<div class="md:col-span-3 bg-pure-surface border border-whisper-border p-stack-lg diffused-shadow flex flex-col justify-between group">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary">PROJECTS MENTORED</span>
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">hub</span>
+</div>
+<div class="mt-stack-md">
+<span class="font-display-xl text-display-xl text-on-background leading-none">12</span>
+<p class="font-body-sm text-body-sm text-secondary mt-2">Active in 3 ecosystems</p>
+</div>
+</div>
+</section>
+<!-- Chart and Scoring Section -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-stack-lg">
+<!-- Left: Chart -->
+<div class="bg-pure-surface border border-whisper-border p-stack-lg diffused-shadow">
+<h3 class="font-headline-lg text-headline-lg mb-stack-md border-b border-whisper-border pb-stack-sm">Reviews by Level</h3>
+<div class="space-y-stack-md mt-stack-md">
+<div class="space-y-1">
+<div class="flex justify-between font-metadata-code text-metadata-code text-secondary">
+<span>LEVEL 01 (BEGINNER)</span>
+<span>80 REVIEWS</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 80%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between font-metadata-code text-metadata-code text-secondary">
+<span>LEVEL 02 (INTERMEDIATE)</span>
+<span>45 REVIEWS</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 45%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between font-metadata-code text-metadata-code text-secondary">
+<span>LEVEL 03 (ADVANCED)</span>
+<span>17 REVIEWS</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 17%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Scoring Guide -->
+<div class="bg-pure-surface border border-whisper-border p-stack-lg diffused-shadow flex flex-col">
+<h3 class="font-headline-lg text-headline-lg mb-stack-md border-b border-whisper-border pb-stack-sm">Mentor Scoring Guide</h3>
+<div class="flex-grow flex flex-col justify-center space-y-stack-md">
+<div class="flex items-center justify-between border-b border-whisper-border py-stack-sm">
+<div class="flex items-center gap-stack-md">
+<span class="w-8 h-8 flex items-center justify-center bg-surface-container-low font-metadata-code text-primary">L1</span>
+<span class="font-body-md text-body-md">Standard Documentation & Styling</span>
+</div>
+<span class="font-metadata-code text-metadata-code text-primary font-bold">10 PTS</span>
+</div>
+<div class="flex items-center justify-between border-b border-whisper-border py-stack-sm">
+<div class="flex items-center gap-stack-md">
+<span class="w-8 h-8 flex items-center justify-center bg-surface-container-low font-metadata-code text-primary">L2</span>
+<span class="font-body-md text-body-md">Refactors & Logic Enhancements</span>
+</div>
+<span class="font-metadata-code text-metadata-code text-primary font-bold">25 PTS</span>
+</div>
+<div class="flex items-center justify-between border-b border-whisper-border py-stack-sm">
+<div class="flex items-center gap-stack-md">
+<span class="w-8 h-8 flex items-center justify-center bg-surface-container-low font-metadata-code text-primary">L3</span>
+<span class="font-body-md text-body-md">Complex Core Architecture</span>
+</div>
+<span class="font-metadata-code text-metadata-code text-primary font-bold">45 PTS</span>
+</div>
+</div>
+</div>
+</section>
+<!-- PR Review Table (Dense) -->
+<section class="bg-pure-surface border border-whisper-border diffused-shadow overflow-hidden">
+<div class="px-stack-lg py-stack-md border-b border-whisper-border flex justify-between items-center">
+<h3 class="font-headline-lg text-headline-lg">Active Review Registry</h3>
+<div class="flex gap-2">
+<span class="w-3 h-3 bg-primary rounded-full animate-pulse"></span>
+<span class="font-metadata-code text-[10px] uppercase tracking-widest text-secondary">Real-time Feed</span>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-whisper-border">
+<tr>
+<th class="px-stack-lg py-4 font-metadata-code text-metadata-code text-secondary uppercase tracking-widest">PR Title & Repository</th>
+<th class="px-stack-lg py-4 font-metadata-code text-metadata-code text-secondary uppercase tracking-widest">Author</th>
+<th class="px-stack-lg py-4 font-metadata-code text-metadata-code text-secondary uppercase tracking-widest text-center">Status</th>
+<th class="px-stack-lg py-4 font-metadata-code text-metadata-code text-secondary uppercase tracking-widest text-center">Level</th>
+<th class="px-stack-lg py-4 font-metadata-code text-metadata-code text-secondary uppercase tracking-widest text-right">Points</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-whisper-border">
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-stack-lg py-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-background group-hover:text-primary transition-colors">fix: documentation typo</span>
+<span class="font-metadata-code text-[10px] text-secondary">gssoc/web-app</span>
+</div>
+</td>
+<td class="px-stack-lg py-4 font-metadata-code text-metadata-code text-on-surface">user_alpha</td>
+<td class="px-stack-lg py-4 text-center">
+<span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed font-metadata-code text-[10px] font-bold uppercase rounded-sm">Approved</span>
+</td>
+<td class="px-stack-lg py-4 text-center">
+<span class="font-metadata-code text-metadata-code text-secondary">L1</span>
+</td>
+<td class="px-stack-lg py-4 text-right">
+<span class="font-metadata-code text-metadata-code text-primary font-bold">+10 PTS</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-stack-lg py-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-background group-hover:text-primary transition-colors">feat: add analytics layer</span>
+<span class="font-metadata-code text-[10px] text-secondary">crimson/protocol-ui</span>
+</div>
+</td>
+<td class="px-stack-lg py-4 font-metadata-code text-metadata-code text-on-surface">dev_beta</td>
+<td class="px-stack-lg py-4 text-center">
+<span class="px-2 py-0.5 bg-error-container text-on-error-container font-metadata-code text-[10px] font-bold uppercase rounded-sm">Changes Requested</span>
+</td>
+<td class="px-stack-lg py-4 text-center">
+<span class="font-metadata-code text-metadata-code text-secondary">L3</span>
+</td>
+<td class="px-stack-lg py-4 text-right">
+<span class="font-metadata-code text-metadata-code text-secondary">0 PTS</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-stack-lg py-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-background group-hover:text-primary transition-colors">refactor: api hooks</span>
+<span class="font-metadata-code text-[10px] text-secondary">gssoc/tracker</span>
+</div>
+</td>
+<td class="px-stack-lg py-4 font-metadata-code text-metadata-code text-on-surface">coder_gamma</td>
+<td class="px-stack-lg py-4 text-center">
+<span class="px-2 py-0.5 bg-surface-container text-secondary font-metadata-code text-[10px] font-bold uppercase rounded-sm">Pending</span>
+</td>
+<td class="px-stack-lg py-4 text-center">
+<span class="font-metadata-code text-metadata-code text-secondary">L2</span>
+</td>
+<td class="px-stack-lg py-4 text-right">
+<span class="font-metadata-code text-metadata-code text-secondary">+0 PTS</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-stack-lg py-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-background group-hover:text-primary transition-colors">fix: layout shift on mobile</span>
+<span class="font-metadata-code text-[10px] text-secondary">dev-tools/ui-kit</span>
+</div>
+</td>
+<td class="px-stack-lg py-4 font-metadata-code text-metadata-code text-on-surface">user_delta</td>
+<td class="px-stack-lg py-4 text-center">
+<span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed font-metadata-code text-[10px] font-bold uppercase rounded-sm">Approved</span>
+</td>
+<td class="px-stack-lg py-4 text-center">
+<span class="font-metadata-code text-metadata-code text-secondary">L1</span>
+</td>
+<td class="px-stack-lg py-4 text-right">
+<span class="font-metadata-code text-metadata-code text-primary font-bold">+10 PTS</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack-md mt-auto border-t border-whisper-border bg-surface-container-low dark:bg-canvas-night">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-page max-w-container-max mx-auto gap-stack-sm">
+<span class="font-label-caps text-label-caps text-secondary uppercase">© 2024 OSS_CORE COMMAND. SYSTEM STATUS: OPERATIONAL</span>
+<div class="flex gap-stack-md">
+<a class="font-metadata-code text-metadata-code text-secondary hover:text-primary transition-colors active:opacity-80" href="#">API Docs</a>
+<a class="font-metadata-code text-metadata-code text-secondary hover:text-primary transition-colors active:opacity-80" href="#">Legal</a>
+<a class="font-metadata-code text-metadata-code text-secondary hover:text-primary transition-colors active:opacity-80" href="#">Node Status</a>
+<a class="font-metadata-code text-metadata-code text-secondary hover:text-primary transition-colors active:opacity-80" href="#">Privacy</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for numbers
+        document.querySelectorAll('.font-display-xl').forEach(el => {
+            const finalVal = parseInt(el.textContent.replace(/,/g, ''));
+            let startVal = 0;
+            const duration = 1000;
+            const step = (finalVal / duration) * 10;
+            
+            const counter = setInterval(() => {
+                startVal += step;
+                if (startVal >= finalVal) {
+                    el.textContent = finalVal.toLocaleString();
+                    clearInterval(counter);
+                } else {
+                    el.textContent = Math.floor(startVal).toLocaleString();
+                }
+            }, 10);
+        });
+    </script>
+</body></html>

@@ -1,7 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
 import { ExternalLink, ArrowUpDown, ArrowUp, ArrowDown, Search, Download, AlertTriangle } from "lucide-react";
-import { ds, fontMono } from "@/lib/ds";
 import { getLabelChipColors } from "@/lib/labelColors";
 import type { TrackedPR } from "@/types/pr-tracker";
 
@@ -20,14 +19,10 @@ function pageItems(current: number, total: number): (number | null)[] {
 function LabelChip({ name, color }: { name: string; color?: string }) {
   const c = getLabelChipColors(name, color);
   return (
-    <span style={{
-      display: "inline-block",
-      padding: "1px 7px",
-      borderRadius: ds.rFull,
-      fontSize: 11, fontWeight: 500,
-      background: c.bg, border: `1px solid ${c.border}`, color: c.color,
-      whiteSpace: "nowrap",
-    }}>
+    <span 
+      className="inline-block px-2 py-0.5 rounded-full font-mono text-[10px] uppercase tracking-widest font-bold"
+      style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.color }}
+    >
       {name}
     </span>
   );
@@ -58,13 +53,10 @@ function notCountedInfo(pr: TrackedPR): { label: string; tooltip: string } | nul
 
 function NotCountedBadge({ info }: { info: { label: string; tooltip: string } }) {
   return (
-    <span title={info.tooltip} style={{
-      display: "inline-flex", alignItems: "center", gap: 3,
-      padding: "1px 6px", borderRadius: ds.rFull,
-      background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)",
-      color: "#dc2626", fontSize: 10, fontWeight: 600,
-      whiteSpace: "nowrap", cursor: "help",
-    }}>
+    <span 
+      title={info.tooltip} 
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold cursor-help whitespace-nowrap"
+    >
       <AlertTriangle size={10} /> {info.label}
     </span>
   );
@@ -114,13 +106,7 @@ function SortBtn({
   return (
     <button
       onClick={() => onToggle(col)}
-      style={{
-        display: "inline-flex", alignItems: "center", gap: 4,
-        background: "none", border: "none", cursor: "pointer",
-        padding: 0, fontSize: 12, fontWeight: 600,
-        color: isActive ? ds.primaryDeep : ds.inkMute,
-        textTransform: "uppercase", letterSpacing: "0.04em",
-      }}
+      className={`inline-flex items-center gap-1 bg-transparent border-none cursor-pointer p-0 font-mono text-[11px] font-bold uppercase tracking-widest ${isActive ? "text-primary" : "text-muted-steel"}`}
     >
       {children}
       <Icon size={11} />
@@ -177,69 +163,41 @@ export function PRTable({ prs, username }: Props) {
   const pageData = sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
-    <div style={{
-      background: ds.canvas,
-      border: `1px solid ${ds.hairlineCool}`,
-      borderRadius: ds.rLg,
-      boxShadow: "0 1px 3px rgba(23,23,23,0.03)",
-      overflow: "hidden",
-    }}>
+    <section className="bg-pure-surface border border-whisper-border rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] mb-16 overflow-hidden">
       {/* Header */}
-      <div style={{
-        padding: "14px 18px",
-        borderBottom: `1px solid ${ds.hairlineCool}`,
-        display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10,
-      }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: ds.ink }}>
-          PR List <span style={{ fontWeight: 400, color: ds.inkMute, fontSize: 13 }}>({filtered.length})</span>
-        </span>
+      <div className="p-6 border-b border-whisper-border flex justify-between items-center bg-canvas-night/5">
+        <h3 className="font-display text-xl font-bold text-ghost-white">
+          Recent Contributions <span className="font-mono text-sm font-normal text-muted-steel">({filtered.length})</span>
+        </h3>
 
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+        <div className="flex gap-2 items-center flex-wrap">
           {/* Search */}
-          <div style={{ position: "relative" }}>
-            <Search size={13} style={{
-              position: "absolute", left: 9, top: "50%",
-              transform: "translateY(-50%)", color: ds.inkFaint, pointerEvents: "none",
-            }} />
+          <div className="relative">
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-steel pointer-events-none" />
             <input
               type="text"
               value={query}
               onChange={(e) => { setQuery(e.target.value); setPage(1); }}
               placeholder="Search PRs…"
-              style={{
-                height: 32, paddingLeft: 28, paddingRight: 10,
-                borderRadius: ds.rSm,
-                border: `1px solid ${ds.hairline}`,
-                background: ds.canvasSoft,
-                fontSize: 13, color: ds.ink, outline: "none",
-                width: 180,
-              }}
+              className="h-8 pl-8 pr-3 rounded-md border border-whisper-border bg-transparent text-sm text-ghost-white outline-none w-48 focus:ring-1 focus:ring-primary focus:border-primary transition-all font-mono"
             />
           </div>
 
           {/* Export */}
           <button
             onClick={() => exportCSV(sorted, username)}
-            style={{
-              display: "flex", alignItems: "center", gap: 5,
-              height: 32, padding: "0 12px",
-              borderRadius: ds.rSm,
-              border: `1px solid ${ds.hairline}`,
-              background: ds.canvasSoft,
-              fontSize: 12, fontWeight: 500, color: ds.inkMute,
-              cursor: "pointer",
-            }}
+            className="flex items-center gap-2 h-8 px-3 rounded-md border border-whisper-border bg-transparent text-xs font-bold text-muted-steel cursor-pointer hover:text-ghost-white hover:border-ghost-white transition-colors uppercase font-mono tracking-widest"
           >
-            <Download size={12} /> Export CSV
+            <Download size={12} /> Export
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
           <thead>
-            <tr style={{ background: ds.canvasSoft, borderBottom: `1px solid ${ds.hairlineCool}` }}>
+            <tr className="bg-canvas-night/5 border-b border-whisper-border">
               {([
                 ["title",    "PR Title"],
                 ["repo",     "Repository"],
@@ -251,18 +209,13 @@ export function PRTable({ prs, username }: Props) {
                 ["mergedAt", "Merged"],
                 [null,       ""],
               ] as [SortKey | null, string][]).map(([key, label], i) => (
-                <th key={i} style={{
-                  padding: "9px 12px",
-                  textAlign: "left",
-                  whiteSpace: "nowrap",
-                  borderRight: i < 8 ? `1px solid ${ds.hairlineCool}` : "none",
-                }}>
+                <th key={i} className={`px-4 py-3 text-left whitespace-nowrap ${i < 8 ? 'border-r border-whisper-border' : ''}`}>
                   {key ? (
                     <SortBtn col={key} active={sortKey} dir={sortDir} onToggle={toggleSort}>
                       {label}
                     </SortBtn>
                   ) : (
-                    <span style={{ fontSize: 12, fontWeight: 600, color: ds.inkMute, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                    <span className="text-[11px] font-bold text-muted-steel uppercase tracking-widest font-mono">
                       {label}
                     </span>
                   )}
@@ -273,40 +226,34 @@ export function PRTable({ prs, username }: Props) {
           <tbody>
             {pageData.length === 0 ? (
               <tr>
-                <td colSpan={9} style={{ padding: 32, textAlign: "center", color: ds.inkFaint, fontSize: 13 }}>
+                <td colSpan={9} className="p-8 text-center text-muted-steel text-sm">
                   {query ? "No PRs match your search" : "No PRs found"}
                 </td>
               </tr>
             ) : (
               pageData.map((pr, i) => (
-                <tr key={pr.id} style={{
-                  borderBottom: i < pageData.length - 1 ? `1px solid ${ds.hairlineCool}` : "none",
-                  background: pr.isValid && pr.state === "merged" ? "transparent" : `rgba(239,68,68,0.02)`,
-                }}>
+                <tr key={pr.id} className={`group hover:bg-canvas-night/5 transition-colors ${i < pageData.length - 1 ? 'border-b border-whisper-border' : ''} ${!pr.isValid || pr.state !== "merged" ? 'bg-red-500/5' : ''}`}>
                   {/* Title */}
-                  <td style={{ padding: "10px 12px", borderRight: `1px solid ${ds.hairlineCool}`, maxWidth: 260 }}>
-                    <span style={{ fontSize: 13, color: ds.ink, fontWeight: 500, display: "block",
-                      whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <td className="px-4 py-3 border-r border-whisper-border max-w-[260px]">
+                    <span className="text-sm text-ghost-white font-medium block whitespace-nowrap overflow-hidden text-ellipsis group-hover:text-primary transition-colors cursor-pointer">
                       {pr.title}
                     </span>
-                    <span style={{ fontSize: 11, color: pr.state === "merged" ? ds.primaryDeep : pr.state === "open" ? "#f59e0b" : ds.inkFaint }}>
+                    <span className={`text-[10px] font-mono font-bold uppercase tracking-widest ${pr.state === 'merged' ? 'text-primary' : pr.state === 'open' ? 'text-yellow-500' : 'text-muted-steel'}`}>
                       {pr.state}
                     </span>
                   </td>
 
                   {/* Repo */}
-                  <td style={{ padding: "10px 12px", borderRight: `1px solid ${ds.hairlineCool}` }}>
+                  <td className="px-4 py-3 border-r border-whisper-border">
                     <a href={pr.repoUrl} target="_blank" rel="noopener noreferrer"
-                      style={{ fontSize: 12, color: ds.inkMute, textDecoration: "none", fontFamily: fontMono,
-                        whiteSpace: "nowrap", display: "block",
-                        maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis" }}>
+                      className="text-xs text-muted-steel no-underline font-mono block whitespace-nowrap overflow-hidden text-ellipsis max-w-[160px] hover:text-primary transition-colors">
                       {pr.repo}
                     </a>
                   </td>
 
                   {/* Labels */}
-                  <td style={{ padding: "10px 12px", borderRight: `1px solid ${ds.hairlineCool}` }}>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 3, minWidth: 120 }}>
+                  <td className="px-4 py-3 border-r border-whisper-border">
+                    <div className="flex flex-wrap gap-1 min-w-[120px]">
                       {pr.labels.map((l) => (
                         <LabelChip key={l} name={l} color={pr.labelColors[l]} />
                       ))}
@@ -314,56 +261,53 @@ export function PRTable({ prs, username }: Props) {
                   </td>
 
                   {/* Difficulty */}
-                  <td style={{ padding: "10px 12px", borderRight: `1px solid ${ds.hairlineCool}`, whiteSpace: "nowrap" }}>
+                  <td className="px-4 py-3 border-r border-whisper-border whitespace-nowrap">
                     {pr.difficulty ? (
-                      <span style={{ fontSize: 12, color: ds.inkMute }}>
-                        {pr.difficulty.replace("level:", "")}
-                        <span style={{ color: ds.inkFaint, fontFamily: fontMono }}> +{pr.difficultyScore}</span>
+                      <span className="text-xs text-muted-steel font-mono">
+                        {pr.difficulty.replace("level:", "").toUpperCase()}
+                        <span className="text-muted-steel/50"> +{pr.difficultyScore}</span>
                       </span>
                     ) : (
-                      <span style={{ fontSize: 12, color: ds.inkFaint }}>—</span>
+                      <span className="text-xs text-muted-steel/50">—</span>
                     )}
                   </td>
 
                   {/* Quality */}
-                  <td style={{ padding: "10px 12px", borderRight: `1px solid ${ds.hairlineCool}`, whiteSpace: "nowrap" }}>
+                  <td className="px-4 py-3 border-r border-whisper-border whitespace-nowrap">
                     {pr.quality ? (
-                      <span style={{ fontSize: 12, color: ds.inkMute }}>
-                        {pr.quality.replace("quality:", "")}
-                        <span style={{ color: ds.inkFaint, fontFamily: fontMono }}> ×{pr.qualityMultiplier}</span>
+                      <span className="text-xs text-muted-steel font-mono">
+                        {pr.quality.replace("quality:", "").toUpperCase()}
+                        <span className="text-muted-steel/50"> ×{pr.qualityMultiplier}</span>
                       </span>
                     ) : (
-                      <span style={{ fontSize: 12, color: ds.inkFaint }}>×1</span>
+                      <span className="text-xs text-muted-steel/50">×1</span>
                     )}
                   </td>
 
                   {/* Type bonuses */}
-                  <td style={{ padding: "10px 12px", borderRight: `1px solid ${ds.hairlineCool}` }}>
+                  <td className="px-4 py-3 border-r border-whisper-border">
                     {pr.typeBonuses.length > 0 ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      <div className="flex flex-col gap-0.5">
                         {pr.typeBonuses.map((b) => (
-                          <span key={b} style={{ fontSize: 11, color: ds.inkMute }}>
+                          <span key={b} className="text-[10px] font-mono text-muted-steel uppercase">
                             {b.replace("type:", "")}
                           </span>
                         ))}
                         {pr.typeBonusTotal > 0 && (
-                          <span style={{ fontSize: 11, color: ds.primaryDeep, fontFamily: fontMono, fontWeight: 600 }}>
+                          <span className="text-[10px] text-primary font-mono font-bold">
                             +{pr.typeBonusTotal}
                           </span>
                         )}
                       </div>
                     ) : (
-                      <span style={{ fontSize: 12, color: ds.inkFaint }}>—</span>
+                      <span className="text-xs text-muted-steel/50">—</span>
                     )}
                   </td>
 
                   {/* Points */}
-                  <td style={{ padding: "10px 12px", borderRight: `1px solid ${ds.hairlineCool}`, whiteSpace: "nowrap", textAlign: "right" }}>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
-                      <span style={{
-                        fontSize: 15, fontWeight: 700, fontFamily: fontMono,
-                        color: pr.points > 0 ? ds.primaryDeep : ds.inkFaint,
-                      }}>
+                  <td className="px-4 py-3 border-r border-whisper-border whitespace-nowrap text-right">
+                    <div className="flex flex-col items-end gap-1">
+                      <span className={`text-[15px] font-bold font-mono ${pr.points > 0 ? 'text-primary' : 'text-muted-steel/50'}`}>
                         {pr.points > 0 ? pr.points : "—"}
                       </span>
                       {(() => {
@@ -374,8 +318,8 @@ export function PRTable({ prs, username }: Props) {
                   </td>
 
                   {/* Merged */}
-                  <td style={{ padding: "10px 12px", borderRight: `1px solid ${ds.hairlineCool}`, whiteSpace: "nowrap" }}>
-                    <span style={{ fontSize: 12, color: ds.inkMute2 }}>
+                  <td className="px-4 py-3 border-r border-whisper-border whitespace-nowrap">
+                    <span className="text-[11px] font-mono text-muted-steel">
                       {pr.mergedAt
                         ? new Date(pr.mergedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "2-digit" })
                         : "—"}
@@ -383,9 +327,9 @@ export function PRTable({ prs, username }: Props) {
                   </td>
 
                   {/* Link */}
-                  <td style={{ padding: "10px 12px", textAlign: "center" }}>
+                  <td className="px-4 py-3 text-center">
                     <a href={pr.url} target="_blank" rel="noopener noreferrer"
-                      style={{ color: ds.inkMute2, display: "inline-flex" }}>
+                      className="text-muted-steel inline-flex hover:text-primary transition-colors">
                       <ExternalLink size={13} />
                     </a>
                   </td>
@@ -398,35 +342,24 @@ export function PRTable({ prs, username }: Props) {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div style={{
-          padding: "12px 18px",
-          borderTop: `1px solid ${ds.hairlineCool}`,
-          display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8,
-        }}>
-          <span style={{ fontSize: 12, color: ds.inkMute2 }}>Page {page} of {totalPages}</span>
-          <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+        <div className="p-4 border-t border-whisper-border flex items-center justify-between flex-wrap gap-2">
+          <span className="text-xs text-muted-steel font-mono uppercase">Page {page} of {totalPages}</span>
+          <div className="flex gap-1 items-center">
             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} suppressHydrationWarning
-              style={{ height: 28, padding: "0 10px", borderRadius: ds.rSm, border: `1px solid ${ds.hairline}`,
-                background: "transparent", color: page === 1 ? ds.inkFaint : ds.inkMute,
-                fontSize: 13, cursor: page === 1 ? "default" : "pointer" }}>‹</button>
+              className="h-7 px-2 rounded-md border border-whisper-border bg-transparent text-muted-steel text-sm hover:text-ghost-white hover:border-ghost-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">‹</button>
             {pageItems(page, totalPages).map((p, i) =>
               p === null
-                ? <span key={`e${i}`} style={{ fontSize: 12, color: ds.inkFaint, padding: "0 2px" }}>…</span>
-                : <button key={p} onClick={() => setPage(p)} suppressHydrationWarning style={{
-                    width: 28, height: 28, borderRadius: ds.rSm,
-                    border: `1px solid ${page === p ? ds.primary : ds.hairline}`,
-                    background: page === p ? "rgba(62,207,142,0.08)" : "transparent",
-                    color: page === p ? ds.primaryDeep : ds.inkMute,
-                    fontSize: 12, fontWeight: page === p ? 600 : 400, cursor: "pointer",
-                  }}>{p}</button>
+                ? <span key={`e${i}`} className="text-xs text-muted-steel/50 px-1">…</span>
+                : <button key={p} onClick={() => setPage(p)} suppressHydrationWarning 
+                    className={`w-7 h-7 rounded-md border text-xs font-mono transition-colors ${page === p ? 'border-primary bg-primary/10 text-primary font-bold' : 'border-whisper-border bg-transparent text-muted-steel hover:text-ghost-white hover:border-ghost-white'}`}>
+                    {p}
+                  </button>
             )}
             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} suppressHydrationWarning
-              style={{ height: 28, padding: "0 10px", borderRadius: ds.rSm, border: `1px solid ${ds.hairline}`,
-                background: "transparent", color: page === totalPages ? ds.inkFaint : ds.inkMute,
-                fontSize: 13, cursor: page === totalPages ? "default" : "pointer" }}>›</button>
+              className="h-7 px-2 rounded-md border border-whisper-border bg-transparent text-muted-steel text-sm hover:text-ghost-white hover:border-ghost-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">›</button>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }

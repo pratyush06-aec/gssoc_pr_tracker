@@ -1,0 +1,20 @@
+{
+  "name": "projects/17372250906456182265",
+  "projectId": "17372250906456182265",
+  "title": "GSSoC Tracker Redesign",
+  "visibility": "PRIVATE",
+  "projectType": "PROJECT_DESIGN",
+  "origin": "STITCH",
+  "deviceType": "DESKTOP",
+  "designSystem": {
+    "assetId": "ec1554798d294e94bc1bc21116c935aa"
+  },
+  "screens": {
+    "8ec0a649ceda49499c6877c347df7455": "Home Page",
+    "ed4184f170a746f5b726997cba26df60": "Landing Page",
+    "3d99ae8050c0485d991761b72e3c83e5": "PR Tracker Dashboard",
+    "9b822acb320e411db77f9f7bf6e4f027": "Analytics Dashboard",
+    "458832566df84a80acd5b8608c8317e1": "Mentor Tracker Dashboard",
+    "82e684159c504ed59fcbdde98223252d": "PR Validator Engine"
+  }
+}

@@ -1,95 +1,68 @@
+import React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
-import { ds, fontMono } from "@/lib/ds";
+import { ValidatorNavbar } from "@/components/pr-check/ValidatorNavbar";
+import { ValidatorHistory } from "@/components/pr-check/ValidatorHistory";
+import { ValidatorSpecs } from "@/components/pr-check/ValidatorSpecs";
 import { PrChecker } from "@/components/PrChecker";
+import { Activity } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "PR Validator · GSSoC Tracker",
-  description:
-    "Paste any GitHub PR link and instantly see if it qualifies for GSSoC 2026 points — checks approval labels, merge status, official repo, and shows the exact points breakdown.",
-  openGraph: {
-    title: "GSSoC PR Validator",
-    description: "Check if your PR qualifies for GSSoC 2026 and see the exact points breakdown.",
-    url: "https://gssoc-tracker.vercel.app/pr-check",
-  },
+  description: "Check if your PR qualifies for GSSoC 2026 and see the exact points breakdown.",
 };
 
 export default function PrCheckPage() {
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: ds.canvasSoft,
-      fontFamily: "var(--font-sans)",
-      padding: "0 24px 80px",
-    }}>
-      {/* Nav */}
-      <div style={{ maxWidth: 640, margin: "0 auto", padding: "22px 0 0" }}>
-        <Link
-          href="/"
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 5,
-            color: ds.inkFaint, textDecoration: "none",
-            fontSize: 13, padding: "4px 8px", borderRadius: ds.rSm,
-          }}
-        >
-          <ArrowLeft size={13} /> Home
-        </Link>
-      </div>
+    <div className="bg-background text-ghost-white min-h-screen font-sans flex flex-col overflow-x-hidden">
+      <ValidatorNavbar />
 
-      <div style={{ maxWidth: 640, margin: "36px auto 0" }}>
+      <main className="flex-grow pt-32 pb-16 px-8 max-w-[1200px] mx-auto w-full">
+        {/* Hero Header */}
+        <div className="mb-12 max-w-3xl">
+          <h1 className="font-display text-4xl font-extrabold text-ghost-white mb-4">PR Validator Engine</h1>
+          <p className="font-sans text-base text-muted-steel leading-relaxed">
+            Check Pull Request eligibility for Global Summer of Code scoring. Direct API validation against repository benchmarks.
+          </p>
+        </div>
 
-        {/* Header */}
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: ds.rMd,
-              background: "rgba(62,207,142,0.1)",
-              border: "1px solid rgba(62,207,142,0.2)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0,
-            }}>
-              <ShieldCheck size={20} color={ds.primary} />
-            </div>
-            <div>
-              <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: ds.primaryDeep, letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: fontMono }}>
-                PR Validator
-              </p>
-              <h1 style={{ margin: 0, fontSize: "clamp(20px,4vw,26px)", fontWeight: 700, color: ds.ink, letterSpacing: "-0.02em", lineHeight: 1.15 }}>
-                Does this PR count for GSSoC?
-              </h1>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          {/* Left Column: Form & Results (8 cols) */}
+          <div className="md:col-span-8 space-y-6">
+            <PrChecker />
+
+            {/* Data Visualizer Placeholder */}
+            <div className="relative w-full h-48 rounded-xl overflow-hidden bg-pure-surface border border-whisper-border shadow-[0_8px_30px_rgba(0,0,0,0.04)] group flex flex-col items-center justify-center p-8 text-center">
+              <Activity className="text-primary w-8 h-8 mb-4 opacity-50" />
+              <h4 className="font-mono text-[11px] font-bold text-muted-steel uppercase tracking-widest">Real-time scoring heuristics visualization</h4>
+              <p className="font-sans text-sm text-muted-steel mt-2 max-w-md">Processing repository metadata through GSSoC validation protocols to ensure fair credit distribution.</p>
             </div>
           </div>
-          <p style={{ margin: 0, fontSize: 14, color: ds.inkMute, lineHeight: 1.7, maxWidth: 520 }}>
-            Paste any GitHub PR link. We check every condition — approval label, merge status, official project list — and show the exact points breakdown.
-          </p>
+
+          {/* Right Column: Recent Checks History (4 cols) */}
+          <aside className="md:col-span-4 space-y-6 flex flex-col">
+            <div className="flex-1">
+              <ValidatorHistory />
+            </div>
+            <ValidatorSpecs />
+          </aside>
         </div>
+      </main>
 
-        {/* Checker */}
-        <PrChecker />
-
-        {/* Info note */}
-        <div style={{
-          marginTop: 32,
-          padding: "12px 16px",
-          borderRadius: ds.rMd,
-          background: "rgba(62,207,142,0.04)",
-          border: `1px solid ${ds.hairlineCool}`,
-        }}>
-          <p style={{ margin: 0, fontSize: 12, color: ds.inkMute, lineHeight: 1.7 }}>
-            This checks whether the PR is approved, merged, and part of an officially registered GSSoC 2026 project — then shows you exactly how many points it is worth.{" "}
-            <Link href="/terms" style={{ color: ds.primaryDeep, textDecoration: "underline" }}>
-              Read the terms
-            </Link>
-            {" "}for more on how this works.
-          </p>
+      {/* Footer */}
+      <footer className="w-full mt-16 border-t border-whisper-border bg-canvas-night/5">
+        <div className="flex flex-col md:flex-row justify-between items-center w-full px-8 py-8 max-w-[1200px] mx-auto">
+          <div className="flex flex-col items-center md:items-start mb-6 md:mb-0">
+            <span className="font-mono text-[11px] font-bold text-ghost-white mb-2 uppercase tracking-widest">GSSOC TRACKER</span>
+            <p className="font-sans text-xs text-muted-steel text-center md:text-left max-w-xs">© 2026 GSSoC Tracker. All rights reserved. Precision PR Validation Engine.</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-8">
+            <a className="font-sans text-xs font-bold text-muted-steel hover:text-primary transition-colors" href="#">Documentation</a>
+            <a className="font-sans text-xs font-bold text-muted-steel hover:text-primary transition-colors" href="#">API Reference</a>
+            <a className="font-sans text-xs font-bold text-muted-steel hover:text-primary transition-colors" href="#">System Status</a>
+            <a className="font-sans text-xs font-bold text-muted-steel hover:text-primary transition-colors" href="#">Privacy Policy</a>
+          </div>
         </div>
-
-        {/* Disclaimer */}
-        <p style={{ marginTop: 20, fontSize: 11, color: ds.inkFaint, textAlign: "center", lineHeight: 1.7 }}>
-          Not affiliated with GirlScript Summer of Code or GirlScript Foundation. Built for the community.
-        </p>
-      </div>
+      </footer>
     </div>
   );
 }

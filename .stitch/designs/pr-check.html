@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GSSoC Tracker | PR Validator Engine</title>
+<!-- Fonts -->
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500&amp;f[]=satoshi@400,500&amp;f[]=jet-brains-mono@500,700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;family=Satoshi:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#ffffff",
+                    "on-background": "#1a1c1c",
+                    "surface-container-low": "#f3f3f3",
+                    "tertiary-fixed-dim": "#74d8bd",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e8e8e8",
+                    "outline": "#906f70",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#dadada",
+                    "tertiary-fixed": "#90f5d9",
+                    "inverse-surface": "#2f3131",
+                    "primary": "#b80035",
+                    "on-surface-variant": "#5c3f40",
+                    "on-surface": "#1a1c1c",
+                    "pure-surface": "#FFFFFF",
+                    "primary-fixed": "#ffdada",
+                    "error": "#ba1a1a",
+                    "outline-variant": "#e5bdbe",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#eefff7",
+                    "canvas-night": "#09090B",
+                    "error-container": "#ffdad6",
+                    "surface-container": "#eeeeee",
+                    "secondary-fixed-dim": "#c6c5cf",
+                    "secondary": "#5d5e66",
+                    "on-tertiary-fixed-variant": "#005142",
+                    "secondary-container": "#e3e1ec",
+                    "surface": "#f9f9f9",
+                    "on-tertiary-fixed": "#002019",
+                    "muted-steel": "#71717A",
+                    "surface-tint": "#be0037",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-primary-container": "#fffaf9",
+                    "background": "#f9f9f9",
+                    "surface-bright": "#f9f9f9",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed": "#40000c",
+                    "on-secondary-fixed": "#1a1b22",
+                    "secondary-fixed": "#e3e1ec",
+                    "primary-fixed-dim": "#ffb3b6",
+                    "surface-variant": "#e2e2e2",
+                    "tertiary-container": "#00836c",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed-variant": "#46464e",
+                    "inverse-on-surface": "#f0f1f1",
+                    "whisper-border": "#E4E4E7",
+                    "on-secondary-container": "#63646c",
+                    "on-primary-fixed-variant": "#920028",
+                    "tertiary": "#006855",
+                    "primary-container": "#e11d48",
+                    "inverse-primary": "#ffb3b6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "stack-md": "16px",
+                    "margin-page": "32px",
+                    "gutter": "24px",
+                    "stack-xl": "64px",
+                    "stack-sm": "8px",
+                    "container-max": "1200px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Satoshi"],
+                    "headline-lg": ["Cabinet Grotesk"],
+                    "label-caps": ["JetBrains Mono"],
+                    "body-md": ["Satoshi"],
+                    "headline-lg-mobile": ["Cabinet Grotesk"],
+                    "display-xl": ["Cabinet Grotesk"],
+                    "metadata-code": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "metadata-code": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #f9f9f9;
+      }
+      .whisper-card {
+        background: #FFFFFF;
+        border: 1px solid #E4E4E7;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .active-nav-underline {
+        position: relative;
+      }
+      .active-nav-underline::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #b80035;
+      }
+      .shimmer {
+        background: linear-gradient(90deg, #f3f3f3 25%, #ececec 50%, #f3f3f3 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      .spring-hover {
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+      }
+      .spring-hover:hover {
+        transform: translateY(-2px);
+      }
+      .spring-hover:active {
+        transform: translateY(1px);
+      }
+    </style>
+</head>
+<body class="font-body-md text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full bg-pure-surface/80 backdrop-blur-md border-b border-whisper-border z-50">
+<div class="flex justify-between items-center w-full px-margin-page py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-stack-md">
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary tracking-tight">GSSoC Tracker</span>
+<nav class="hidden md:flex items-center gap-stack-lg ml-stack-xl">
+<a class="font-label-caps text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-colors duration-200" href="#">Dashboard</a>
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary pb-1" href="#">Pull Requests</a>
+<a class="font-label-caps text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-colors duration-200" href="#">Contributors</a>
+<a class="font-label-caps text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-colors duration-200" href="#">Benchmarks</a>
+</nav>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="hidden md:flex items-center px-4 py-2 bg-primary-container text-on-primary-container font-label-caps text-label-caps rounded-sm spring-hover">
+                    Validate PR
+                </button>
+<div class="flex items-center gap-stack-sm text-secondary">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">settings</span>
+<div class="w-8 h-8 rounded-full bg-surface-container border border-whisper-border overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, professional headshot of a software developer in a bright, modern office with soft daylight. The image has a minimalist and high-end aesthetic with a shallow depth of field, focusing on the person's face while blurring the background technical books and monitors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCG1KCu0oHmw73odubMstvZkdCKGSbOnzbYhzjXTeGRazqciXvgTgLQaolv0auDHZG7p_RgYQDPShOlcClqcuHhqmWgFZnVdyqbbBn0HPmEQU2_oHkFPb3k1xwyO-L7Z8w-4DioG0kDbKxcDHBKBINunEm2pulAq89-lhpcYFWgYPuq22_i7rC_JfQdM_Bzy52Bz8lx2DbN3HwcRd425wBsaY5mLhY0feuIC_ZPMryiFCT4A1jo5uQOtQ57hN_5XOAr8ccvm87ECANA"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-32 pb-stack-xl px-margin-page max-w-container-max mx-auto w-full">
+<!-- Hero Header -->
+<div class="mb-stack-xl max-w-3xl">
+<h1 class="font-headline-lg text-headline-lg text-on-background mb-stack-sm">PR Validator Engine</h1>
+<p class="font-body-md text-body-md text-muted-steel">Check Pull Request eligibility for Global Summer of Code scoring. Direct API validation against repository benchmarks.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Left Column: Form & Results (8 cols) -->
+<div class="md:col-span-8 space-y-gutter">
+<!-- Validation Input -->
+<section class="whisper-card p-stack-lg rounded-lg">
+<label class="block font-label-caps text-label-caps text-muted-steel mb-stack-sm">GITHUB PULL REQUEST URL</label>
+<div class="flex flex-col md:flex-row gap-4">
+<div class="relative flex-grow">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-steel">link</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface border-whisper-border rounded-sm focus:border-primary focus:ring-0 font-metadata-code text-metadata-code transition-all outline-none" placeholder="https://github.com/org/repo/pull/123" type="text"/>
+</div>
+<button class="px-8 py-3 bg-primary text-on-primary font-label-caps text-label-caps rounded-sm hover:bg-primary-container transition-colors spring-hover whitespace-nowrap">
+                            VALIDATE PR
+                        </button>
+</div>
+</section>
+<!-- Results Panel (Active State) -->
+<section class="whisper-card overflow-hidden rounded-lg border-t-4 border-t-tertiary">
+<div class="p-stack-lg border-b border-whisper-border flex justify-between items-center bg-surface/30">
+<div>
+<span class="font-label-caps text-label-caps text-muted-steel">VALIDATION STATUS</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-tertiary uppercase tracking-wider">VALID</h2>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-caps text-label-caps text-muted-steel">CALCULATED SCORE</span>
+<div class="text-primary font-display-xl text-display-xl font-extrabold">+25 <span class="text-body-md font-label-caps">PTS</span></div>
+</div>
+</div>
+<div class="p-stack-lg bg-pure-surface grid grid-cols-1 sm:grid-cols-2 gap-stack-lg">
+<div class="space-y-stack-md">
+<div>
+<span class="font-label-caps text-label-caps text-muted-steel block border-b border-whisper-border mb-1">REPOSITORY</span>
+<span class="font-metadata-code text-metadata-code text-on-background">gssoc/validator-core-engine</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-muted-steel block border-b border-whisper-border mb-1">AUTHOR</span>
+<span class="font-metadata-code text-metadata-code text-on-background">@dev_alpha_01</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-muted-steel block border-b border-whisper-border mb-1">PR TITLE</span>
+<span class="font-metadata-code text-metadata-code text-on-background">feat: Implement high-density data visualization hooks</span>
+</div>
+</div>
+<div class="space-y-stack-md">
+<div>
+<span class="font-label-caps text-label-caps text-muted-steel block border-b border-whisper-border mb-1">MERGED STATUS</span>
+<div class="flex items-center gap-2 text-metadata-code font-metadata-code text-tertiary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>MERGED INTO MAIN</span>
+</div>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-muted-steel block border-b border-whisper-border mb-1">BENCHMARK LABELS</span>
+<div class="flex flex-wrap gap-2 mt-2">
+<span class="px-2 py-0.5 bg-surface-container text-on-secondary-fixed-variant border border-whisper-border font-label-caps text-[9px] rounded-sm">gssoc-ext</span>
+<span class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant border border-outline-variant font-label-caps text-[9px] rounded-sm">level-2</span>
+<span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant border border-tertiary-container font-label-caps text-[9px] rounded-sm">documentation-bonus</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Data Visualizer Placeholder -->
+<div class="relative w-full h-48 rounded-lg overflow-hidden whisper-card group">
+
+<div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center">
+<span class="material-symbols-outlined text-primary mb-2">monitoring</span>
+<h4 class="font-label-caps text-label-caps text-muted-steel">Real-time scoring heuristics visualization</h4>
+<p class="font-body-sm text-body-sm text-muted-steel mt-2 max-w-md">Processing repository metadata through GSSoC validation protocols to ensure fair credit distribution.</p>
+</div>
+</div>
+</div>
+<!-- Right Column: Recent Checks History (4 cols) -->
+<aside class="md:col-span-4 space-y-gutter">
+<div class="whisper-card h-full rounded-lg overflow-hidden">
+<div class="p-stack-md bg-surface-container-low border-b border-whisper-border flex items-center justify-between">
+<h3 class="font-label-caps text-label-caps text-on-surface">RECENT CHECKS</h3>
+<span class="material-symbols-outlined text-muted-steel text-sm cursor-pointer hover:text-primary">history</span>
+</div>
+<div class="divide-y divide-whisper-border">
+<!-- History Item 1 -->
+<div class="p-stack-md hover:bg-surface transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-metadata-code text-metadata-code font-bold text-on-background group-hover:text-primary transition-colors">PR #1042</span>
+<span class="font-metadata-code text-metadata-code text-tertiary font-bold">+15 PTS</span>
+</div>
+<p class="text-[12px] text-muted-steel truncate font-body-sm">fix: resolve memory leak in validator hook...</p>
+<div class="flex justify-between items-center mt-3">
+<span class="px-1.5 py-0.5 bg-surface-container text-muted-steel text-[9px] font-label-caps rounded-sm">level-1</span>
+<span class="text-[10px] text-muted-steel font-label-caps">2 MINS AGO</span>
+</div>
+</div>
+<!-- History Item 2 -->
+<div class="p-stack-md hover:bg-surface transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-metadata-code text-metadata-code font-bold text-on-background group-hover:text-primary transition-colors">PR #982</span>
+<span class="font-metadata-code text-metadata-code text-primary font-bold">INVALID</span>
+</div>
+<p class="text-[12px] text-muted-steel truncate font-body-sm">docs: update contributing guide</p>
+<div class="flex justify-between items-center mt-3">
+<span class="px-1.5 py-0.5 bg-surface-container text-muted-steel text-[9px] font-label-caps rounded-sm">no-points</span>
+<span class="text-[10px] text-muted-steel font-label-caps">14 MINS AGO</span>
+</div>
+</div>
+<!-- History Item 3 -->
+<div class="p-stack-md hover:bg-surface transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-metadata-code text-metadata-code font-bold text-on-background group-hover:text-primary transition-colors">PR #1105</span>
+<span class="font-metadata-code text-metadata-code text-tertiary font-bold">+40 PTS</span>
+</div>
+<p class="text-[12px] text-muted-steel truncate font-body-sm">feat: core-engine rewrite v2</p>
+<div class="flex justify-between items-center mt-3">
+<span class="px-1.5 py-0.5 bg-surface-container text-muted-steel text-[9px] font-label-caps rounded-sm">level-3</span>
+<span class="text-[10px] text-muted-steel font-label-caps">1 HOUR AGO</span>
+</div>
+</div>
+<!-- History Item 4 -->
+<div class="p-stack-md hover:bg-surface transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-metadata-code text-metadata-code font-bold text-on-background group-hover:text-primary transition-colors">PR #877</span>
+<span class="font-metadata-code text-metadata-code text-tertiary font-bold">+25 PTS</span>
+</div>
+<p class="text-[12px] text-muted-steel truncate font-body-sm">refactor: database schema...</p>
+<div class="flex justify-between items-center mt-3">
+<span class="px-1.5 py-0.5 bg-surface-container text-muted-steel text-[9px] font-label-caps rounded-sm">level-2</span>
+<span class="text-[10px] text-muted-steel font-label-caps">3 HOURS AGO</span>
+</div>
+</div>
+</div>
+<div class="p-stack-md border-t border-whisper-border bg-surface/50 text-center">
+<button class="text-primary font-label-caps text-label-caps hover:underline">VIEW FULL HISTORY</button>
+</div>
+</div>
+<!-- Technical Specs Card -->
+<div class="whisper-card p-stack-md rounded-lg bg-on-background text-pure-surface">
+<h4 class="font-label-caps text-label-caps mb-stack-sm text-primary">SYSTEM STATUS</h4>
+<div class="space-y-3">
+<div class="flex justify-between text-metadata-code">
+<span class="opacity-60">API LATENCY</span>
+<span class="text-tertiary">42ms</span>
+</div>
+<div class="flex justify-between text-metadata-code">
+<span class="opacity-60">AUTH TOKEN</span>
+<span class="text-tertiary">ACTIVE</span>
+</div>
+<div class="h-1 w-full bg-white/10 rounded-full overflow-hidden mt-2">
+<div class="h-full bg-primary w-3/4"></div>
+</div>
+<p class="text-[10px] opacity-40 font-metadata-code mt-4">VALIDATOR CORE V4.2.1-STABLE</p>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-stack-xl border-t border-whisper-border bg-surface-container-low">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-page py-stack-lg max-w-container-max mx-auto">
+<div class="flex flex-col items-center md:items-start mb-stack-md md:mb-0">
+<span class="font-label-caps text-label-caps font-bold text-on-surface mb-2">GSSOC TRACKER</span>
+<p class="font-body-sm text-body-sm text-muted-steel text-center md:text-left max-w-xs">© 2024 GSSoC Tracker. All rights reserved. Precision PR Validation Engine.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-stack-lg">
+<a class="font-body-sm text-body-sm text-muted-steel hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="font-body-sm text-body-sm text-muted-steel hover:text-primary transition-colors" href="#">API Reference</a>
+<a class="font-body-sm text-body-sm text-muted-steel hover:text-primary transition-colors" href="#">System Status</a>
+<a class="font-body-sm text-body-sm text-muted-steel hover:text-primary transition-colors" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'translateY(1px)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'translateY(-2px)';
+            });
+        });
+
+        // Simulating a loading state if needed for demo
+        const validateBtn = document.querySelector('button.bg-primary');
+        validateBtn?.addEventListener('click', function() {
+            this.innerHTML = '<span class="material-symbols-outlined animate-spin text-[16px]">sync</span> VALIDATING...';
+            this.disabled = true;
+            setTimeout(() => {
+                this.innerHTML = 'VALIDATE PR';
+                this.disabled = false;
+            }, 2000);
+        });
+    </script>
+</body></html>

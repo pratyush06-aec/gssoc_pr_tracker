@@ -3,21 +3,23 @@
 @import "shadcn/tailwind.css";
 
 @theme inline {
-  --color-canvas:       #ffffff;
-  --color-canvas-soft:  #fafafa;
-  --color-canvas-night: #1c1c1c;
-  --color-primary:      #3ecf8e;
-  --color-primary-deep: #24b47e;
-  --color-ink:          #171717;
-  --color-ink-mute:     #707070;
-  --color-hairline:     #dfdfdf;
-  --color-background:   #fafafa;
-  --color-foreground:   #171717;
-  --color-border:       #dfdfdf;
-  --color-ring:         #3ecf8e;
-  --radius:             8px;
-  --font-sans: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --color-canvas-night: #09090B;
+  --color-pure-surface: #18181B;
+  --color-ghost-white: #FAFAFA;
+  --color-muted-steel: #A1A1AA;
+  --color-whisper-border: rgba(255, 255, 255, 0.08);
+  --color-primary: #E11D48;
+  --color-primary-deep: #b80035;
+  --color-ink: #FAFAFA;
+  --color-ink-mute: #A1A1AA;
+  --color-background: #09090B;
+  --color-surface: #18181B;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-ring: #E11D48;
+  --radius: 12px;
+  --font-sans: "Satoshi", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Cabinet Grotesk", var(--font-sans);
 }
 
 @layer base {

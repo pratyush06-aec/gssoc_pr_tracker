@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GSSoC Tracker | Crimson Protocol</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,400&f[]=satoshi@700,500,400&f[]=jet-brains-mono@700,500,400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@100..900&family=JetBrains+Mono:wght@100..900&family=Satoshi:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-tint": "#be0037",
+                      "on-secondary-fixed": "#1a1b22",
+                      "on-tertiary-container": "#eefff7",
+                      "primary-fixed-dim": "#ffb3b6",
+                      "inverse-on-surface": "#f0f1f1",
+                      "canvas-night": "#09090B",
+                      "muted-steel": "#71717A",
+                      "on-surface-variant": "#5c3f40",
+                      "surface": "#f9f9f9",
+                      "inverse-primary": "#ffb3b6",
+                      "tertiary-container": "#00836c",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "whisper-border": "#E4E4E7",
+                      "on-error": "#ffffff",
+                      "on-secondary-container": "#63646c",
+                      "secondary": "#5d5e66",
+                      "secondary-fixed": "#e3e1ec",
+                      "pure-surface": "#FFFFFF",
+                      "surface-container": "#eeeeee",
+                      "outline": "#906f70",
+                      "on-tertiary": "#ffffff",
+                      "on-background": "#1a1c1c",
+                      "surface-bright": "#f9f9f9",
+                      "on-secondary-fixed-variant": "#46464e",
+                      "on-error-container": "#93000a",
+                      "on-primary-container": "#fffaf9",
+                      "tertiary-fixed": "#90f5d9",
+                      "on-surface": "#1a1c1c",
+                      "tertiary-fixed-dim": "#74d8bd",
+                      "tertiary": "#006855",
+                      "on-primary-fixed": "#40000c",
+                      "secondary-fixed-dim": "#c6c5cf",
+                      "background": "#f9f9f9",
+                      "surface-container-low": "#f3f3f3",
+                      "primary-fixed": "#ffdada",
+                      "outline-variant": "#e5bdbe",
+                      "on-tertiary-fixed": "#002019",
+                      "primary": "#b80035",
+                      "surface-container-highest": "#e2e2e2",
+                      "on-primary-fixed-variant": "#920028",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#e8e8e8",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#e2e2e2",
+                      "inverse-surface": "#2f3131",
+                      "secondary-container": "#e3e1ec",
+                      "on-tertiary-fixed-variant": "#005142",
+                      "surface-dim": "#dadada",
+                      "primary-container": "#e11d48"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-md": "16px",
+                      "stack-lg": "32px",
+                      "gutter": "24px",
+                      "margin-page": "32px",
+                      "stack-sm": "8px",
+                      "container-max": "1200px",
+                      "stack-xl": "64px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Cabinet Grotesk"],
+                      "headline-lg": ["Cabinet Grotesk"],
+                      "display-xl": ["Cabinet Grotesk"],
+                      "body-sm": ["Satoshi"],
+                      "metadata-code": ["JetBrains Mono"],
+                      "label-caps": ["JetBrains Mono"],
+                      "body-md": ["Satoshi"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "metadata-code": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #FAFAFA;
+            color: #09090B;
+            -webkit-font-smoothing: antialiased;
+        }
+        .diffused-shadow {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        }
+        .crimson-gradient-bg {
+            background: linear-gradient(180deg, rgba(225, 29, 72, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .transition-spring {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .chart-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 3s ease-in-out forwards;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-whisper-border h-16">
+<div class="flex justify-between items-center w-full px-margin-page max-w-container-max mx-auto h-full">
+<div class="font-display-xl text-headline-lg-mobile md:text-headline-lg text-primary tracking-tighter">
+                GSSoC Tracker
+            </div>
+<div class="hidden md:flex items-center gap-stack-lg">
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors duration-200" href="#">Network</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors duration-200" href="#">Assets</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors duration-200" href="#">Registry</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors duration-200" href="#">Nodes</a>
+</div>
+<button class="bg-primary text-on-primary px-stack-md py-2 font-label-caps text-label-caps tracking-wider transition-spring active:translate-y-[1px]">
+                START TRACKING
+            </button>
+</div>
+</nav>
+<main class="pt-24 pb-stack-xl px-margin-page max-w-container-max mx-auto space-y-gutter">
+<!-- Header / Profile Section -->
+<header class="flex flex-col md:flex-row gap-gutter items-start md:items-center justify-between border-b border-whisper-border pb-gutter">
+<div class="flex items-center gap-stack-md">
+<div class="relative group">
+<div class="w-24 h-24 rounded-full border border-whisper-border overflow-hidden bg-surface-container-low diffused-shadow transition-spring group-hover:scale-105">
+<img alt="Abstract Developer UI Graphic" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLunPr3B_JjSpvmV-dQ2loOqN22_5Dq7FsAkcvB_yzQZdxM-2i9P4ePdFkPht0M_KSEvqcUloP3-KszgnVYCjhdQx2heMsV54RGVB9OR-TfPuM6j992HzBnGPMQLMOWpdUt06owiQtrm3RKSTZiem7BsJiaaWzml_BwLdTNLXbgR99jZyVw8xmDa92n0_ND5kdjTx4yFLc5MI2cxRDy0irypQ7VUjxRBuMZR888COeeLsH-XPkwc6YrKYEoX"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-on-primary font-metadata-code text-[10px] px-2 py-0.5 rounded-full border-2 border-white">
+                        ACTIVE
+                    </div>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg text-canvas-night mb-1">@contributor_dev</h1>
+<div class="flex items-center gap-3">
+<span class="font-metadata-code text-metadata-code bg-canvas-night text-white px-2 py-1">RANK #42</span>
+<span class="font-metadata-code text-metadata-code text-primary font-bold">2,450 PTS</span>
+</div>
+</div>
+</div>
+<button class="border border-whisper-border text-canvas-night px-6 py-2 font-label-caps text-label-caps hover:bg-surface-container-low transition-colors duration-200 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+                MANUAL SYNC
+            </button>
+</header>
+<!-- Stats Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="bg-pure-surface border border-whisper-border p-stack-md diffused-shadow group">
+<div class="text-secondary font-label-caps text-[10px] mb-2">POINTS</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-xl text-headline-lg text-canvas-night">2,450</span>
+<span class="text-primary font-metadata-code text-xs">+12%</span>
+</div>
+</div>
+<div class="bg-pure-surface border border-whisper-border p-stack-md diffused-shadow">
+<div class="text-secondary font-label-caps text-[10px] mb-2">GLOBAL RANK</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-xl text-headline-lg text-canvas-night">#42</span>
+<span class="text-green-600 font-metadata-code text-xs">▲ 3</span>
+</div>
+</div>
+<div class="bg-pure-surface border border-whisper-border p-stack-md diffused-shadow">
+<div class="text-secondary font-label-caps text-[10px] mb-2">MERGED PRS</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-xl text-headline-lg text-canvas-night">18</span>
+<span class="text-secondary font-metadata-code text-xs">OF 22</span>
+</div>
+</div>
+<div class="bg-pure-surface border border-whisper-border p-stack-md diffused-shadow">
+<div class="text-secondary font-label-caps text-[10px] mb-2">OPEN PRS</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-xl text-headline-lg text-canvas-night">4</span>
+<div class="flex gap-1">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Primary Chart -->
+<section class="bg-pure-surface border border-whisper-border diffused-shadow">
+<div class="p-stack-md border-b border-whisper-border flex justify-between items-center">
+<h2 class="font-headline-lg text-headline-lg-mobile text-canvas-night">Points Progression</h2>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 bg-primary"></span>
+<span class="font-metadata-code text-xs">Total Score</span>
+</div>
+</div>
+</div>
+<div class="h-[400px] w-full relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]">
+<svg class="w-full h-full p-stack-lg" preserveaspectratio="none" viewbox="0 0 1000 400">
+<!-- Grid Lines -->
+<line stroke="#E4E4E7" stroke-width="1" x1="0" x2="1000" y1="350" y2="350"></line>
+<line stroke="#E4E4E7" stroke-dasharray="4" stroke-width="1" x1="0" x2="1000" y1="250" y2="250"></line>
+<line stroke="#E4E4E7" stroke-dasharray="4" stroke-width="1" x1="0" x2="1000" y1="150" y2="150"></line>
+<line stroke="#E4E4E7" stroke-dasharray="4" stroke-width="1" x1="0" x2="1000" y1="50" y2="50"></line>
+<!-- Area Fill -->
+<path d="M0 350 L100 320 L250 280 L400 290 L550 200 L700 150 L850 80 L1000 50 L1000 350 Z" fill="url(#crimsonGradient)" opacity="0.4"></path>
+<!-- Line -->
+<path class="chart-line" d="M0 350 L100 320 L250 280 L400 290 L550 200 L700 150 L850 80 L1000 50" fill="none" stroke="#E11D48" stroke-width="3"></path>
+<defs>
+<lineargradient id="crimsonGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#E11D48"></stop>
+<stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<!-- X-Axis Labels -->
+<div class="absolute bottom-4 left-0 w-full px-stack-lg flex justify-between font-metadata-code text-muted-steel text-[10px]">
+<span>WK 01</span>
+<span>WK 02</span>
+<span>WK 03</span>
+<span>WK 04</span>
+<span>WK 05</span>
+<span>WK 06</span>
+<span>WK 07</span>
+<span>WK 08</span>
+</div>
+</div>
+</section>
+<!-- Secondary Charts -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Rank Stability -->
+<div class="bg-pure-surface border border-whisper-border diffused-shadow h-full">
+<div class="p-stack-md border-b border-whisper-border">
+<h3 class="font-headline-lg text-[18px] text-canvas-night">Rank Stability</h3>
+</div>
+<div class="p-stack-md h-64 flex flex-col justify-end gap-2">
+<div class="flex items-end gap-1 h-full">
+<div class="flex-1 bg-surface-container-low hover:bg-primary transition-colors duration-300 group relative" style="height: 60%">
+<span class="absolute -top-6 left-1/2 -translate-x-1/2 font-metadata-code text-[10px] hidden group-hover:block">#62</span>
+</div>
+<div class="flex-1 bg-surface-container-low hover:bg-primary transition-colors duration-300 group relative" style="height: 65%"></div>
+<div class="flex-1 bg-surface-container-low hover:bg-primary transition-colors duration-300 group relative" style="height: 55%"></div>
+<div class="flex-1 bg-surface-container-low hover:bg-primary transition-colors duration-300 group relative" style="height: 75%"></div>
+<div class="flex-1 bg-surface-container-low hover:bg-primary transition-colors duration-300 group relative" style="height: 80%"></div>
+<div class="flex-1 bg-primary relative" style="height: 92%">
+<span class="absolute -top-6 left-1/2 -translate-x-1/2 font-metadata-code text-[10px]">#42</span>
+</div>
+</div>
+<div class="flex justify-between font-label-caps text-[9px] text-muted-steel">
+<span>OCT 01</span>
+<span>OCT 15</span>
+<span>NOV 01</span>
+</div>
+</div>
+</div>
+<!-- PR Difficulty -->
+<div class="bg-pure-surface border border-whisper-border diffused-shadow h-full">
+<div class="p-stack-md border-b border-whisper-border">
+<h3 class="font-headline-lg text-[18px] text-canvas-night">PR Difficulty Breakdown</h3>
+</div>
+<div class="p-stack-md flex items-center justify-between h-64">
+<div class="relative w-32 h-32">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<circle cx="18" cy="18" fill="none" r="16" stroke="#F1F5F9" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="none" r="16" stroke="#E11D48" stroke-dasharray="44, 100" stroke-dashoffset="0" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="none" r="16" stroke="#09090B" stroke-dasharray="33, 100" stroke-dashoffset="-44" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="none" r="16" stroke="#71717A" stroke-dasharray="23, 100" stroke-dashoffset="-77" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-xl text-lg">18</span>
+<span class="font-label-caps text-[8px]">TOTAL</span>
+</div>
+</div>
+<div class="flex-1 pl-8 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-primary"></div>
+<span class="font-body-sm text-sm">Level 1</span>
+</div>
+<span class="font-metadata-code">08</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-canvas-night"></div>
+<span class="font-body-sm text-sm">Level 2</span>
+</div>
+<span class="font-metadata-code">06</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-muted-steel"></div>
+<span class="font-body-sm text-sm">Level 3</span>
+</div>
+<span class="font-metadata-code">04</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Activity Feed -->
+<section class="bg-pure-surface border border-whisper-border diffused-shadow">
+<div class="p-stack-md border-b border-whisper-border">
+<h2 class="font-headline-lg text-headline-lg-mobile text-canvas-night">Activity Feed</h2>
+</div>
+<div class="p-stack-md space-y-6 relative">
+<div class="absolute left-[27px] top-stack-md bottom-stack-md w-px bg-whisper-border"></div>
+<!-- Entry 1 -->
+<div class="relative flex gap-4 items-start pl-stack-md">
+<div class="z-10 w-6 h-6 rounded-full bg-primary border-4 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[10px]">done_all</span>
+</div>
+<div class="flex-1 pb-6 border-b border-whisper-border">
+<div class="flex justify-between items-start mb-1">
+<p class="font-body-md text-canvas-night">Merged <span class="font-metadata-code text-primary">PR #1402</span> in <span class="font-bold">gssoc/web-app</span></p>
+<span class="font-metadata-code text-xs text-muted-steel">2H AGO</span>
+</div>
+<div class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2 py-0.5 font-metadata-code text-[10px]">
+                            +10 PTS EARNED
+                        </div>
+</div>
+</div>
+<!-- Entry 2 -->
+<div class="relative flex gap-4 items-start pl-stack-md">
+<div class="z-10 w-6 h-6 rounded-full bg-canvas-night border-4 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[10px]">edit</span>
+</div>
+<div class="flex-1 pb-6 border-b border-whisper-border">
+<div class="flex justify-between items-start mb-1">
+<p class="font-body-md text-canvas-night">Opened <span class="font-metadata-code text-primary">PR #88</span> in <span class="font-bold">crimson/protocol-ui</span></p>
+<span class="font-metadata-code text-xs text-muted-steel">5H AGO</span>
+</div>
+<div class="inline-flex items-center gap-1 bg-surface-container text-secondary px-2 py-0.5 font-metadata-code text-[10px]">
+                            IN REVIEW
+                        </div>
+</div>
+</div>
+<!-- Entry 3 -->
+<div class="relative flex gap-4 items-start pl-stack-md">
+<div class="z-10 w-6 h-6 rounded-full bg-primary border-4 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[10px]">trending_up</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<p class="font-body-md font-bold text-canvas-night">Rank Up! System Alert</p>
+<span class="font-metadata-code text-xs text-muted-steel">1D AGO</span>
+</div>
+<p class="font-body-sm text-secondary">You moved from <span class="font-metadata-code">#45</span> to <span class="font-metadata-code text-primary">#42</span> after recent validations.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-whisper-border mt-stack-xl">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-page py-stack-lg max-w-container-max mx-auto gap-gutter">
+<div class="font-label-caps text-label-caps text-on-surface">© 2024 TERMINAL SYSTEMS ARCHITECTURE</div>
+<div class="flex gap-stack-md items-center">
+<a class="font-label-caps text-label-caps text-muted-steel hover:text-primary transition-all underline" href="#">Privacy</a>
+<a class="font-label-caps text-label-caps text-muted-steel hover:text-primary transition-all underline" href="#">Terms</a>
+<a class="font-label-caps text-label-caps text-muted-steel hover:text-primary transition-all underline" href="#">Compliance</a>
+<a class="font-label-caps text-label-caps text-muted-steel hover:text-primary transition-all underline" href="#">Contact</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction for Stats Cards
+        document.querySelectorAll('.diffused-shadow').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'all 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+</body></html>

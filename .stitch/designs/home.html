@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TMNL | GSSoC Tracker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Hanken+Grotesk:wght@400;700;800&amp;family=DM+Sans:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        :root {
+            --spring-easing: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        body {
+            background-color: #09090B;
+            color: #fbdbdb;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .spring-transition {
+            transition: all 0.4s var(--spring-easing);
+        }
+
+        .active-role {
+            border-color: #e11d48 !important;
+            transform: scale(1.02);
+            background-color: #1f0f10 !important;
+        }
+
+        .active-role .role-icon {
+            color: #e11d48 !important;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 1px #e11d48;
+        }
+
+        .btn-active:active {
+            transform: translateY(1px);
+        }
+
+        .glass-panel {
+            background: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#00382d",
+                        "primary-container": "#e11d48",
+                        "whisper-border": "rgba(255, 255, 255, 0.08)",
+                        "on-background": "#fbdbdb",
+                        "outline": "#ac8889",
+                        "pure-surface": "#18181B",
+                        "surface-container-highest": "#443030",
+                        "on-surface-variant": "#e5bdbe",
+                        "secondary-fixed": "#e2e1eb",
+                        "canvas-night": "#09090B",
+                        "surface-variant": "#443030",
+                        "inverse-surface": "#fbdbdb",
+                        "primary-fixed": "#ffdada",
+                        "ghost-white": "#FAFAFA",
+                        "on-secondary-container": "#b4b4bd",
+                        "on-tertiary-container": "#eefff7",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#281718",
+                        "tertiary-fixed-dim": "#74d8bd",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#90f5d9",
+                        "tertiary": "#74d8bd",
+                        "primary-fixed-dim": "#ffb3b6",
+                        "on-primary": "#68001a",
+                        "on-secondary": "#2f3037",
+                        "surface": "#1f0f10",
+                        "inverse-on-surface": "#3f2b2c",
+                        "on-primary-fixed": "#40000c",
+                        "surface-tint": "#ffb3b6",
+                        "tertiary-container": "#00836c",
+                        "secondary-container": "#45464e",
+                        "on-secondary-fixed-variant": "#45464e",
+                        "background": "#1f0f10",
+                        "on-tertiary-fixed": "#002019",
+                        "on-error": "#690005",
+                        "surface-container": "#2c1b1c",
+                        "outline-variant": "#5c3f40",
+                        "on-tertiary-fixed-variant": "#005142",
+                        "surface-container-lowest": "#190a0b",
+                        "on-primary-fixed-variant": "#920028",
+                        "on-surface": "#fbdbdb",
+                        "on-primary-container": "#fffaf9",
+                        "surface-container-high": "#382526",
+                        "on-secondary-fixed": "#1a1b22",
+                        "inverse-primary": "#be0037",
+                        "primary": "#ffb3b6",
+                        "on-error-container": "#ffdad6",
+                        "secondary": "#c6c6cf",
+                        "secondary-fixed-dim": "#c6c6cf",
+                        "surface-dim": "#1f0f10",
+                        "surface-bright": "#483435"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1200px",
+                        "margin-page": "2rem",
+                        "internal-padding": "1.5rem",
+                        "section-gap": "5rem",
+                        "gutter": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "mono-label": ["JetBrains Mono"],
+                        "display-lg-mobile": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-base": ["DM Sans"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "mono-data": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "mono-label": ["12px", { "lineHeight": "1.5", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-lg-mobile": ["40px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-md": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "mono-data": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-canvas-night font-body-base overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<nav class="bg-canvas-night border-b border-whisper-border w-full h-16 sticky top-0 z-50">
+<div class="flex justify-between items-center px-margin-page max-w-container-max mx-auto h-full">
+<div class="flex items-center gap-8">
+<span class="font-display-lg text-headline-md tracking-tighter text-primary-container">TMNL</span>
+<div class="hidden md:flex gap-6 font-mono-label text-mono-label">
+<a class="text-primary border-b border-primary-container pb-1 hover:text-primary transition-colors duration-200" href="#">Network</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Assets</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Registry</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Nodes</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">terminal</button>
+<button class="font-mono-label text-mono-label px-4 py-2 bg-primary-container text-on-primary-container active:translate-y-px transition-transform">Connect</button>
+</div>
+</div>
+</nav>
+<main class="min-h-[calc(100vh-128px)] flex flex-col items-center justify-center relative px-margin-page py-12">
+<!-- Structural Background Accents -->
+<div class="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
+<div class="absolute top-0 right-0 w-1/3 h-full border-l border-whisper-border"></div>
+<div class="absolute bottom-1/4 left-0 w-full h-px bg-whisper-border"></div>
+<div class="absolute top-1/3 left-1/4 w-px h-1/2 bg-whisper-border"></div>
+</div>
+<!-- Content Canvas -->
+<div class="max-w-2xl w-full text-center z-10">
+<!-- Hero Section -->
+<div class="mb-12 space-y-4">
+<h1 class="font-display-lg text-display-lg md:text-display-lg tracking-tightest text-on-surface uppercase">GSSoC Tracker</h1>
+<p class="font-display-lg text-headline-md text-on-surface-variant opacity-80 max-w-lg mx-auto">Select your role to get started</p>
+</div>
+<!-- Role Picker -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-12">
+<!-- Contributor Card -->
+<button class="group flex flex-col items-start p-8 bg-pure-surface border border-whisper-border rounded-lg spring-transition text-left hover:border-primary-container/50" id="role-contributor" onclick="selectRole('contributor')">
+<span class="material-symbols-outlined role-icon text-3xl mb-4 text-on-surface-variant group-hover:text-primary-container transition-colors" data-icon="person_search">person_search</span>
+<span class="font-mono-label text-mono-label uppercase tracking-widest text-on-surface mb-1">Role 01</span>
+<span class="font-headline-md text-xl text-on-surface">Contributor</span>
+<p class="font-body-base text-sm text-on-surface-variant mt-2 opacity-60">Track your contributions, points, and leaderboard rank in real-time.</p>
+</button>
+<!-- Mentor Card -->
+<button class="group flex flex-col items-start p-8 bg-pure-surface border border-whisper-border rounded-lg spring-transition text-left hover:border-primary-container/50" id="role-mentor" onclick="selectRole('mentor')">
+<span class="material-symbols-outlined role-icon text-3xl mb-4 text-on-surface-variant group-hover:text-primary-container transition-colors" data-icon="shield_person">shield_person</span>
+<span class="font-mono-label text-mono-label uppercase tracking-widest text-on-surface mb-1">Role 02</span>
+<span class="font-headline-md text-xl text-on-surface">Mentor</span>
+<p class="font-body-base text-sm text-on-surface-variant mt-2 opacity-60">Monitor project health, review PRs, and manage contributor workflow.</p>
+</button>
+</div>
+<!-- Input Section -->
+<div class="opacity-0 translate-y-4 transition-all duration-500 pointer-events-none" id="input-container">
+<div class="bg-pure-surface border border-whisper-border p-2 flex flex-col md:flex-row gap-2 max-w-md mx-auto">
+<div class="flex-grow flex items-center px-4 bg-canvas-night/50 border border-whisper-border focus-within:border-primary-container transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant mr-3 text-sm">alternate_email</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-surface font-mono-data w-full py-3 placeholder:text-on-surface-variant/30" placeholder="GitHub username" type="text"/>
+</div>
+<button class="bg-primary-container text-on-primary-container px-8 py-3 font-mono-label text-mono-label uppercase tracking-widest btn-active transition-transform active:translate-y-[1px]">
+                        Track
+                    </button>
+</div>
+<div class="mt-4 flex justify-center items-center gap-2 font-mono-data text-xs text-on-surface-variant/40">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span>AWAITING SELECTION PARAMETERS</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-canvas-night border-t border-whisper-border w-full py-8">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-page max-w-container-max mx-auto gap-4">
+<div class="font-mono-label text-mono-label uppercase tracking-widest text-on-surface-variant/60">
+                © 2024 TERMINAL SYSTEMS ARCHITECTURE. ALL RIGHTS RESERVED.
+            </div>
+<div class="flex gap-8 font-mono-label text-mono-label">
+<a class="text-on-surface-variant opacity-60 hover:text-on-surface transition-opacity duration-300" href="#">Privacy</a>
+<a class="text-on-surface-variant opacity-60 hover:text-on-surface transition-opacity duration-300" href="#">Terms</a>
+<a class="text-on-surface-variant opacity-60 hover:text-on-surface transition-opacity duration-300" href="#">Compliance</a>
+<a class="text-on-surface-variant opacity-60 hover:text-on-surface transition-opacity duration-300" href="#">Contact</a>
+</div>
+</div>
+</footer>
+<script>
+        function selectRole(role) {
+            const contributorBtn = document.getElementById('role-contributor');
+            const mentorBtn = document.getElementById('role-mentor');
+            const inputContainer = document.getElementById('input-container');
+
+            // Reset classes
+            contributorBtn.classList.remove('active-role');
+            mentorBtn.classList.remove('active-role');
+
+            // Set active class
+            if (role === 'contributor') {
+                contributorBtn.classList.add('active-role');
+            } else {
+                mentorBtn.classList.add('active-role');
+            }
+
+            // Show input field with animation
+            inputContainer.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            inputContainer.classList.add('opacity-100', 'translate-y-0');
+        }
+    </script>
+</body></html>

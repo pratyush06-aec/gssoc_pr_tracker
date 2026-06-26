@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GSSoC_CONTRIBUTOR | Protocol Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e2e2e2",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2f3131",
+                        "primary-fixed-dim": "#ffb3b6",
+                        "on-tertiary-fixed": "#002019",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#63646c",
+                        "surface-bright": "#f9f9f9",
+                        "tertiary-fixed-dim": "#74d8bd",
+                        "on-surface-variant": "#5c3f40",
+                        "primary": "#b80035",
+                        "on-primary-container": "#fffaf9",
+                        "surface-container-low": "#f3f3f3",
+                        "surface-dim": "#dadada",
+                        "secondary-fixed-dim": "#c6c5cf",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "whisper-border": "#E4E4E7",
+                        "surface-container-highest": "#e2e2e2",
+                        "outline-variant": "#e5bdbe",
+                        "pure-surface": "#FFFFFF",
+                        "tertiary-fixed": "#90f5d9",
+                        "surface-container": "#eeeeee",
+                        "secondary": "#5d5e66",
+                        "primary-fixed": "#ffdada",
+                        "surface": "#f9f9f9",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#be0037",
+                        "muted-steel": "#71717A",
+                        "on-secondary-fixed-variant": "#46464e",
+                        "canvas-night": "#09090B",
+                        "secondary-fixed": "#e3e1ec",
+                        "on-secondary-fixed": "#1a1b22",
+                        "primary-container": "#e11d48",
+                        "inverse-on-surface": "#f0f1f1",
+                        "secondary-container": "#e3e1ec",
+                        "inverse-primary": "#ffb3b6",
+                        "on-error": "#ffffff",
+                        "tertiary": "#006855",
+                        "outline": "#906f70",
+                        "on-background": "#1a1c1c",
+                        "tertiary-container": "#00836c",
+                        "on-primary-fixed": "#40000c",
+                        "on-surface": "#1a1c1c",
+                        "on-tertiary-fixed-variant": "#005142",
+                        "background": "#f9f9f9",
+                        "on-primary-fixed-variant": "#920028",
+                        "surface-container-high": "#e8e8e8",
+                        "on-tertiary-container": "#eefff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-xl": "64px",
+                        "stack-lg": "32px",
+                        "stack-sm": "8px",
+                        "container-max": "1200px",
+                        "gutter": "24px",
+                        "margin-page": "32px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["JetBrains Mono"],
+                        "body-md": ["Satoshi", "sans-serif"],
+                        "body-sm": ["Satoshi", "sans-serif"],
+                        "headline-lg": ["Cabinet Grotesk", "sans-serif"],
+                        "metadata-code": ["JetBrains Mono"],
+                        "display-xl": ["Cabinet Grotesk", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "metadata-code": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        @import url('https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,400&f[]=satoshi@700,500,400&display=swap');
+        
+        body {
+            background-color: #FAFAFA;
+            color: #1a1c1c;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .diffused-shadow {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        .terminal-border {
+            border: 1px solid #E4E4E7;
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .accordion-open .accordion-content {
+            max-height: 200px;
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #f7f7f7 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-pure-surface/80 border-b border-whisper-border backdrop-blur-md">
+<div class="flex justify-between items-center w-full px-margin-page h-16 max-w-container-max mx-auto">
+<div class="flex items-center gap-stack-lg">
+<span class="font-headline-lg text-headline-lg font-extrabold text-primary">GSSoC_CONTRIBUTOR</span>
+<nav class="hidden md:flex gap-stack-md">
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors duration-200" href="#">Network</a>
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary pb-1" href="#">Assets</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors duration-200" href="#">Registry</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors duration-200" href="#">Nodes</a>
+</nav>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="hidden md:block font-label-caps text-label-caps px-4 py-2 border border-whisper-border hover:bg-surface transition-all">Docs</button>
+<button class="bg-primary text-on-primary font-label-caps text-label-caps px-4 py-2 hover:bg-primary-container transition-all active:-translate-y-px">Deploy Node</button>
+<div class="flex gap-4 ml-2">
+<span class="material-symbols-outlined text-secondary cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer">settings</span>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-stack-xl max-w-container-max mx-auto px-margin-page">
+<!-- Profile Header Section -->
+<section class="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-stack-md">
+<div class="flex items-center gap-stack-md">
+<div class="relative group">
+<img class="w-20 h-20 rounded-full border-2 border-primary/20 object-cover" data-alt="A professional studio portrait of a software developer with a minimalist and clinical aesthetic. The lighting is crisp and cold, emphasizing a high-tech corporate mood. The background is a clean, off-white laboratory setting with subtle technical equipment visible in the soft-focus distance. The overall color palette is dominated by whites, grays, and a sharp crimson accent on the developer's lanyard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzpOrrQ6SAvncn1SUvxGl1R8XbQkXAvyIngP7OYNdQoIoPhxNiu4UeipLINvctQqG49A8wV4Vf59PSkVP1qaPE4We2RhSUeXvhsxPle7BC_vuIqQE_-YdqeGPIkJJSMYXeQCrJyDmpEpkCXtqZkdLPnqjnZZZkwgUgdVWTER2MuFjYrjFJKCdCe8NCyzOFmJK4isLXFwMX45BhSeH29ADoIVKWkqH2iwvNY1B5QB0oMpmS8HakNmmX0TGDVUvRiqsV9k4C0sqeoxKx"/>
+<div class="absolute bottom-0 right-0 w-6 h-6 bg-primary border-2 border-pure-surface rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px] text-white" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div>
+<h1 class="font-display-xl text-display-xl text-canvas-night">@contributor_dev</h1>
+<div class="flex items-center gap-4 mt-1">
+<span class="font-label-caps text-label-caps text-primary px-2 py-0.5 border border-primary/20 bg-primary/5">RANK #42</span>
+<span class="font-label-caps text-label-caps text-muted-steel">CRIMSON_ID: 992-X-04</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-muted-steel mb-1">TOTAL_AGGREGATE_SCORE</p>
+<p class="font-display-xl text-display-xl text-primary">2,450 <span class="text-[16px] font-label-caps text-muted-steel">PTS</span></p>
+</div>
+</section>
+<!-- Stats Grid (Asymmetrical) -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-stack-lg">
+<div class="md:col-span-5 bg-pure-surface terminal-border diffused-shadow p-stack-md flex flex-col justify-between hover:border-primary/30 transition-colors">
+<div>
+<span class="font-label-caps text-label-caps text-muted-steel">GLOBAL RANKING</span>
+<h2 class="font-display-xl text-display-xl mt-stack-sm">#42</h2>
+</div>
+<div class="mt-stack-md pt-stack-sm border-t border-whisper-border flex justify-between items-center">
+<span class="font-metadata-code text-metadata-code text-tertiary">↑ 4 Positions (24h)</span>
+<span class="material-symbols-outlined text-muted-steel">trending_up</span>
+</div>
+</div>
+<div class="md:col-span-4 bg-canvas-night text-pure-surface p-stack-md flex flex-col justify-between">
+<div>
+<span class="font-label-caps text-label-caps text-primary">PRs_MERGED</span>
+<h2 class="font-display-xl text-display-xl mt-stack-sm">18</h2>
+</div>
+<div class="mt-stack-md pt-stack-sm border-t border-muted-steel/30 flex justify-between items-center">
+<span class="font-metadata-code text-metadata-code text-primary-fixed-dim">TOP 5% PERFORMER</span>
+<span class="material-symbols-outlined text-primary-fixed-dim">workspace_premium</span>
+</div>
+</div>
+<div class="md:col-span-3 bg-pure-surface terminal-border diffused-shadow p-stack-md flex flex-col justify-between border-l-4 border-l-primary">
+<div>
+<span class="font-label-caps text-label-caps text-muted-steel">TOTAL SCORE</span>
+<h2 class="font-display-xl text-display-xl mt-stack-sm">2,450</h2>
+</div>
+<div class="mt-stack-md pt-stack-sm border-t border-whisper-border">
+<div class="w-full h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="w-[75%] h-full bg-primary"></div>
+</div>
+<p class="font-metadata-code text-metadata-code mt-2 text-muted-steel">550 PTS TO RANK #41</p>
+</div>
+</div>
+</section>
+<!-- Charts Section -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-stack-lg">
+<!-- Difficulty Bar Chart -->
+<div class="md:col-span-7 bg-pure-surface terminal-border diffused-shadow p-stack-md">
+<div class="flex justify-between items-center mb-stack-md">
+<h3 class="font-headline-lg text-headline-lg text-[18px]">PRs by Difficulty</h3>
+<span class="font-label-caps text-label-caps text-muted-steel">SYSTEM_METRIC: LVL_DIST</span>
+</div>
+<div class="flex items-end justify-between h-48 gap-stack-lg mt-8">
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-surface-container-high rounded-t relative h-[40%] group-hover:bg-primary/20 transition-colors">
+<div class="absolute -top-6 w-full text-center font-metadata-code text-metadata-code">8 PRs</div>
+</div>
+<span class="font-label-caps text-label-caps mt-4 text-muted-steel">Level 1</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-primary rounded-t relative h-[30%]">
+<div class="absolute -top-6 w-full text-center font-metadata-code text-metadata-code text-primary font-bold">6 PRs</div>
+</div>
+<span class="font-label-caps text-label-caps mt-4 text-primary">Level 2</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-canvas-night rounded-t relative h-[20%] group-hover:bg-primary transition-colors">
+<div class="absolute -top-6 w-full text-center font-metadata-code text-metadata-code">4 PRs</div>
+</div>
+<span class="font-label-caps text-label-caps mt-4 text-muted-steel">Level 3</span>
+</div>
+</div>
+</div>
+<!-- Status Donut Chart -->
+<div class="md:col-span-5 bg-pure-surface terminal-border diffused-shadow p-stack-md">
+<div class="flex justify-between items-center mb-stack-md">
+<h3 class="font-headline-lg text-headline-lg text-[18px]">PR Status</h3>
+<span class="material-symbols-outlined text-muted-steel">pie_chart</span>
+</div>
+<div class="flex items-center h-48">
+<div class="relative w-32 h-32">
+<!-- Simple CSS Donut -->
+<div class="absolute inset-0 rounded-full border-[12px] border-surface-container"></div>
+<div class="absolute inset-0 rounded-full border-[12px] border-primary" style="clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 75%, 50% 75%);"></div>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-xl text-[24px]">24</span>
+<span class="font-metadata-code text-[10px] text-muted-steel">TOTAL</span>
+</div>
+</div>
+<div class="ml-stack-lg space-y-3 flex-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-body-sm text-body-sm">Merged</span>
+</div>
+<span class="font-metadata-code">18</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="font-body-sm text-body-sm">Open</span>
+</div>
+<span class="font-metadata-code">4</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-canvas-night"></span>
+<span class="font-body-sm text-body-sm">Closed</span>
+</div>
+<span class="font-metadata-code">2</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- PR Table -->
+<section class="bg-pure-surface terminal-border diffused-shadow mb-stack-lg overflow-hidden">
+<div class="p-stack-md border-b border-whisper-border flex justify-between items-center bg-surface-bright">
+<h3 class="font-headline-lg text-headline-lg text-[18px]">Recent Contributions</h3>
+<div class="flex gap-2">
+<input class="font-metadata-code text-metadata-code border border-whisper-border px-3 py-1 bg-white focus:ring-1 focus:ring-primary focus:border-primary outline-none" placeholder="Filter repo..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto scroll-hide">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-white border-b border-whisper-border">
+<th class="px-stack-md py-4 font-label-caps text-label-caps text-muted-steel">PULL REQUEST &amp; REPOSITORY</th>
+<th class="px-stack-md py-4 font-label-caps text-label-caps text-muted-steel">STATUS</th>
+<th class="px-stack-md py-4 font-label-caps text-label-caps text-muted-steel">LVL</th>
+<th class="px-stack-md py-4 font-label-caps text-label-caps text-muted-steel text-right">POINTS</th>
+</tr>
+</thead>
+<tbody class="font-metadata-code">
+<tr class="border-b border-whisper-border hover:bg-surface-bright transition-colors group">
+<td class="px-stack-md py-4">
+<div class="flex flex-col">
+<span class="font-bold text-canvas-night group-hover:text-primary transition-colors cursor-pointer">fix: overflow issue on mobile nav</span>
+<span class="text-[10px] text-muted-steel">gssoc/web-app · #1402</span>
+</div>
+</td>
+<td class="px-stack-md py-4">
+<span class="px-2 py-1 bg-tertiary/10 text-tertiary border border-tertiary/20 font-label-caps text-[10px]">MERGED</span>
+</td>
+<td class="px-stack-md py-4">L1</td>
+<td class="px-stack-md py-4 text-right font-bold">10 PTS</td>
+</tr>
+<tr class="border-b border-whisper-border hover:bg-surface-bright transition-colors group">
+<td class="px-stack-md py-4">
+<div class="flex flex-col">
+<span class="font-bold text-canvas-night group-hover:text-primary transition-colors cursor-pointer">feat: implement protocol dashboard v2</span>
+<span class="text-[10px] text-muted-steel">crimson/protocol-ui · #88</span>
+</div>
+</td>
+<td class="px-stack-md py-4">
+<span class="px-2 py-1 bg-primary/10 text-primary border border-primary/20 font-label-caps text-[10px]">OPEN</span>
+</td>
+<td class="px-stack-md py-4 text-primary">L3</td>
+<td class="px-stack-md py-4 text-right font-bold text-primary">45 PTS</td>
+</tr>
+<tr class="border-b border-whisper-border hover:bg-surface-bright transition-colors group">
+<td class="px-stack-md py-4">
+<div class="flex flex-col">
+<span class="font-bold text-canvas-night group-hover:text-primary transition-colors cursor-pointer">refactor: optimize data fetching hooks</span>
+<span class="text-[10px] text-muted-steel">gssoc/tracker · #241</span>
+</div>
+</td>
+<td class="px-stack-md py-4">
+<span class="px-2 py-1 bg-tertiary/10 text-tertiary border border-tertiary/20 font-label-caps text-[10px]">MERGED</span>
+</td>
+<td class="px-stack-md py-4">L2</td>
+<td class="px-stack-md py-4 text-right font-bold">25 PTS</td>
+</tr>
+<tr class="border-b border-whisper-border hover:bg-surface-bright transition-colors group">
+<td class="px-stack-md py-4">
+<div class="flex flex-col">
+<span class="font-bold text-canvas-night group-hover:text-primary transition-colors cursor-pointer">fix: broken images in gallery view</span>
+<span class="text-[10px] text-muted-steel">dev-tools/ui-kit · #42</span>
+</div>
+</td>
+<td class="px-stack-md py-4">
+<span class="px-2 py-1 bg-error/10 text-error border border-error/20 font-label-caps text-[10px]">CLOSED</span>
+</td>
+<td class="px-stack-md py-4">L1</td>
+<td class="px-stack-md py-4 text-right font-bold">0 PTS</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-white text-center">
+<button class="font-label-caps text-label-caps text-muted-steel hover:text-primary transition-colors">VIEW FULL PROTOCOL HISTORY</button>
+</div>
+</section>
+<!-- Scoring Guide Accordion -->
+<section class="bg-pure-surface terminal-border diffused-shadow">
+<div class="accordion-item" id="scoringAccordion">
+<button class="w-full px-stack-md py-4 flex justify-between items-center hover:bg-surface-bright transition-all group" onclick="toggleAccordion('scoringAccordion')">
+<div class="flex items-center gap-stack-md">
+<span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">info</span>
+<h3 class="font-headline-lg text-headline-lg text-[16px]">Crimson Scoring Protocol</h3>
+</div>
+<span class="material-symbols-outlined transform transition-transform duration-300" id="accordionIcon">expand_more</span>
+</button>
+<div class="accordion-content border-t border-whisper-border bg-surface-bright">
+<div class="p-stack-md grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="p-stack-sm border-l-2 border-primary/20">
+<h4 class="font-label-caps text-label-caps text-primary mb-2">Level 1 (Basic)</h4>
+<p class="font-body-sm text-body-sm text-muted-steel">Simple bug fixes, documentation updates, or minor UI tweaks.</p>
+<p class="font-metadata-code font-bold mt-2 text-canvas-night">Value: 10 PTS</p>
+</div>
+<div class="p-stack-sm border-l-2 border-primary/40">
+<h4 class="font-label-caps text-label-caps text-primary mb-2">Level 2 (Intermediate)</h4>
+<p class="font-body-sm text-body-sm text-muted-steel">Feature enhancements, significant refactors, or new component creation.</p>
+<p class="font-metadata-code font-bold mt-2 text-canvas-night">Value: 25 PTS</p>
+</div>
+<div class="p-stack-sm border-l-2 border-primary">
+<h4 class="font-label-caps text-label-caps text-primary mb-2">Level 3 (Advanced)</h4>
+<p class="font-body-sm text-body-sm text-muted-steel">Core architecture changes, new integration, or solving critical bottlenecks.</p>
+<p class="font-metadata-code font-bold mt-2 text-canvas-night">Value: 45 PTS</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="relative w-full bg-surface-bright border-t border-whisper-border mt-stack-xl">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-lg w-full px-margin-page py-stack-lg max-w-container-max mx-auto">
+<div>
+<span class="font-label-caps text-label-caps font-bold text-on-surface">GSSoC_CONTRIBUTOR_SYSTEM</span>
+<p class="font-metadata-code text-metadata-code text-muted-steel mt-2">© 2024 GSSoC Crimson Protocol. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap gap-stack-md md:justify-end">
+<a class="font-metadata-code text-metadata-code text-muted-steel hover:text-on-background transition-colors" href="#">Whitepaper</a>
+<a class="font-metadata-code text-metadata-code text-muted-steel hover:text-on-background transition-colors" href="#">System Status</a>
+<a class="font-metadata-code text-metadata-code text-muted-steel hover:text-on-background transition-colors" href="#">Security Audit</a>
+<a class="font-metadata-code text-metadata-code text-muted-steel hover:text-on-background transition-colors" href="#">API Reference</a>
+</div>
+</div>
+</footer>
+<script>
+        function toggleAccordion(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById('accordionIcon');
+            const isOpen = el.classList.contains('accordion-open');
+            
+            if (isOpen) {
+                el.classList.remove('accordion-open');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                el.classList.add('accordion-open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Tactile button feedback (-1px translation)
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'translateY(1px)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'translateY(0)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Simple hardware-accelerated scroll entry effect
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+            observer.observe(section);
+        });
+    </script>
+</body></html>

@@ -1,44 +1,35 @@
 "use client";
-import { useState, useEffect, FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, AlertCircle, Star, GitPullRequest, Users, ArrowLeft } from "lucide-react";
-import { ds, fontMono } from "@/lib/ds";
-import { GitHubIcon } from "@/components/icons";
-import { SubscribeButton } from "@/components/SubscribeModal";
-import { HomePointsGuide } from "@/components/HomePointsGuide";
-import Image from "next/image";
 
-const REPO_URL = "https://github.com/PRODHOSH/gssoc-tracker";
+import React, { useState, FormEvent, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { UserSearch, ShieldCheck, Loader2, AlertCircle } from "lucide-react";
+
+const GithubIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
+import { HomeNavbar } from "@/components/home/HomeNavbar";
+import { HomeFooter } from "@/components/home/HomeFooter";
 
 type Role = "contributor" | "mentor";
 
-const ROLES: { id: Role; icon: React.ReactNode; label: string; desc: string; border: string; bg: string; hoverBorder: string; hoverBg: string }[] = [
-  {
-    id: "contributor",
-    icon: <GitPullRequest size={20} color={ds.primary} />,
-    label: "Contributor",
-    desc: "Track PRs you've submitted with GSSoC labels",
-    border: "rgba(62,207,142,0.2)", bg: "rgba(62,207,142,0.05)",
-    hoverBorder: "rgba(62,207,142,0.5)", hoverBg: "rgba(62,207,142,0.1)",
-  },
-  {
-    id: "mentor",
-    icon: <Users size={20} color="#fbbf24" />,
-    label: "Mentor",
-    desc: "Track PRs you've reviewed as a GSSoC mentor",
-    border: "rgba(251,191,36,0.2)", bg: "rgba(251,191,36,0.05)",
-    hoverBorder: "rgba(251,191,36,0.5)", hoverBg: "rgba(251,191,36,0.1)",
-  },
-];
-
-export default function Home() {
+export default function HomePage() {
   const router = useRouter();
-  const [step, setStep]         = useState<"role" | "input">("role");
-  const [role, setRole]         = useState<Role | null>(null);
-  const [input, setInput]       = useState("");
-  const [state, setState]       = useState<"idle" | "loading" | "error">("idle");
-  const [errMsg, setErrMsg]     = useState("");
+  const [role, setRole] = useState<Role | null>(null);
+  const [input, setInput] = useState("");
+  const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errMsg, setErrMsg] = useState("");
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
@@ -50,21 +41,14 @@ export default function Home() {
     setShowBanner(false);
   }
 
-  function selectRole(r: Role) {
-    setRole(r);
+  function handleSelectRole(selectedRole: Role) {
+    setRole(selectedRole);
     setInput("");
     setState("idle");
     setErrMsg("");
-    setStep("input");
   }
 
-  function goBack() {
-    setStep("role");
-    setState("idle");
-    setErrMsg("");
-  }
-
-  async function submit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const raw = input.trim().replace(/^@/, "");
     if (!raw || !role) return;
@@ -72,287 +56,188 @@ export default function Home() {
 
     try {
       const res = await fetch(`https://api.github.com/users/${encodeURIComponent(raw)}`);
-      if (res.status === 404) { setErrMsg("GitHub user not found"); setState("error"); return; }
-      if (!res.ok) { setErrMsg("Couldn't reach GitHub. Try again."); setState("error"); return; }
-      router.push(role === "contributor" ? `/pr-tracker/${encodeURIComponent(raw)}` : `/mentor/${encodeURIComponent(raw)}`);
+      if (res.status === 404) {
+        setErrMsg("GitHub user not found");
+        setState("error");
+        return;
+      }
+      if (!res.ok) {
+        setErrMsg("Couldn't reach GitHub. Try again.");
+        setState("error");
+        return;
+      }
+      
+      setState("success");
+      setTimeout(() => {
+        router.push(
+          role === "contributor"
+            ? `/pr-tracker/${encodeURIComponent(raw)}`
+            : `/mentor/${encodeURIComponent(raw)}`
+        );
+      }, 2000);
     } catch {
       setErrMsg("Couldn't reach the API. Try again.");
       setState("error");
     }
   }
 
-  const activeRole = ROLES.find((r) => r.id === role);
-
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: ds.canvasNight,
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-      fontFamily: "var(--font-sans)",
-      padding: "40px 24px",
-      position: "relative",
-    }}>
-
+    <div className="bg-canvas-night font-sans overflow-x-hidden min-h-screen flex flex-col relative text-ghost-white">
       {/* What's new banner */}
       {showBanner && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-          background: "rgba(62,207,142,0.07)",
-          borderBottom: "1px solid rgba(62,207,142,0.15)",
-          padding: "9px 20px",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-        }}>
-          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1 }}>
+        <div className="fixed top-0 left-0 right-0 z-[60] bg-primary/10 border-b border-primary/20 px-5 py-2 flex items-center justify-center gap-3 backdrop-blur-md">
+          <span className="text-xs text-ghost-white/80 leading-none">
             📋 GSSoC 2026 scoring guidelines have been updated —{" "}
-            <a href="https://gssoc.girlscript.org/guidelines/labeling" target="_blank" rel="noopener noreferrer" style={{ color: ds.primary, fontWeight: 600, textDecoration: "none" }}>
+            <a
+              href="https://gssoc.girlscript.org/guidelines/labeling"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary font-bold hover:underline"
+            >
               see the new label guide
             </a>
           </span>
           <button
             onClick={dismissBanner}
-            style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: "rgba(255,255,255,0.3)", fontSize: 16, lineHeight: 1,
-              padding: "0 4px", flexShrink: 0,
-            }}
+            className="text-ghost-white/50 hover:text-ghost-white text-lg leading-none"
           >
             ×
           </button>
         </div>
       )}
-      <motion.div
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        style={{ width: "100%", maxWidth: 480, textAlign: "center" }}
-      >
-        {/* Icon */}
-        <div style={{
-          display: "inline-flex", alignItems: "center", justifyContent: "center",
-          width: 52, height: 52, borderRadius: 14,
-          background: "rgba(62,207,142,0.1)", border: "1px solid rgba(62,207,142,0.2)",
-          marginBottom: 24,
-        }}>
-          <GitPullRequest size={24} color={ds.primary} />
+
+      <HomeNavbar />
+
+      <main className="flex-1 flex flex-col items-center justify-center relative px-8 py-12">
+        {/* Structural Background Accents */}
+        <div className="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
+          <div className="absolute top-0 right-0 w-1/3 h-full border-l border-whisper-border"></div>
+          <div className="absolute bottom-1/4 left-0 w-full h-px bg-whisper-border"></div>
+          <div className="absolute top-1/3 left-1/4 w-[1px] h-1/2 bg-whisper-border"></div>
         </div>
 
-        <h1 style={{
-          margin: "0 0 8px",
-          fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 700,
-          color: "#fff", letterSpacing: "-0.03em", lineHeight: 1.1,
-        }}>
-          GSSoC Tracker
-        </h1>
+        {/* Content Canvas */}
+        <div className="max-w-2xl w-full text-center z-10 flex flex-col items-center">
+          {/* Hero Section */}
+          <div className="mb-12 space-y-4">
+            <h1 className="font-display text-5xl md:text-6xl font-extrabold tracking-tight text-ghost-white uppercase">
+              GSSoC Tracker
+            </h1>
+            <p className="font-display text-2xl font-bold text-muted-steel opacity-80 max-w-lg mx-auto">
+              Select your role to get started
+            </p>
+          </div>
 
-        <p style={{ margin: "0 0 36px", fontSize: 15, color: "rgba(255,255,255,0.35)", lineHeight: 1.6 }}>
-          {step === "role" ? "Who are you in GSSoC 2026?" : "Enter your details to get started"}
-        </p>
-
-        {/* Step content */}
-        <AnimatePresence mode="wait">
-          {step === "role" && (
-            <motion.div
-              key="role"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.2 }}
-              style={{ display: "flex", flexDirection: "column", gap: 10 }}
+          {/* Role Picker */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 w-full">
+            {/* Contributor Card */}
+            <button
+              className={`group flex flex-col items-start p-8 bg-pure-surface border rounded-xl transition-all duration-400 ease-out text-left ${
+                role === "contributor"
+                  ? "border-primary scale-[1.02] bg-primary/5"
+                  : "border-whisper-border hover:border-primary/50"
+              }`}
+              onClick={() => handleSelectRole("contributor")}
             >
-              {ROLES.map((r) => (
-                <RoleCard key={r.id} role={r} onSelect={selectRole} />
-              ))}
-              <div style={{ marginTop: 8, display: "flex", justifyContent: "center" }}>
-                <HomePointsGuide />
-              </div>
-              <div style={{ marginTop: 6, textAlign: "center" }}>
-                <a
-                  href="/pr-check"
-                  style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", textDecoration: "none", transition: "color 0.13s" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = ds.primary)}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.3)")}
-                >
-                  or validate a specific PR →
-                </a>
-              </div>
-            </motion.div>
-          )}
+              <UserSearch
+                className={`w-8 h-8 mb-4 transition-colors ${
+                  role === "contributor" ? "text-primary" : "text-muted-steel group-hover:text-primary"
+                }`}
+              />
+              <span className="font-mono text-[11px] uppercase tracking-widest text-ghost-white mb-1 font-bold">
+                Role 01
+              </span>
+              <span className="font-display text-2xl font-bold text-ghost-white">
+                Contributor
+              </span>
+              <p className="font-sans text-sm text-muted-steel mt-2">
+                Track your contributions, points, and leaderboard rank in real-time.
+              </p>
+            </button>
 
-          {step === "input" && (
-            <motion.div
-              key="input"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.2 }}
+            {/* Mentor Card */}
+            <button
+              className={`group flex flex-col items-start p-8 bg-pure-surface border rounded-xl transition-all duration-400 ease-out text-left ${
+                role === "mentor"
+                  ? "border-primary scale-[1.02] bg-primary/5"
+                  : "border-whisper-border hover:border-primary/50"
+              }`}
+              onClick={() => handleSelectRole("mentor")}
             >
-              {/* Role pill + back */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-                <button
-                  onClick={goBack}
-                  style={{
-                    display: "inline-flex", alignItems: "center", gap: 5,
-                    background: "none", border: "none", cursor: "pointer",
-                    color: "rgba(255,255,255,0.35)", fontSize: 13, padding: "4px 0",
+              <ShieldCheck
+                className={`w-8 h-8 mb-4 transition-colors ${
+                  role === "mentor" ? "text-primary" : "text-muted-steel group-hover:text-primary"
+                }`}
+              />
+              <span className="font-mono text-[11px] uppercase tracking-widest text-ghost-white mb-1 font-bold">
+                Role 02
+              </span>
+              <span className="font-display text-2xl font-bold text-ghost-white">Mentor</span>
+              <p className="font-sans text-sm text-muted-steel mt-2">
+                Monitor project health, review PRs, and manage contributor workflow.
+              </p>
+            </button>
+          </div>
+
+          {/* Input Section */}
+          <div
+            className={`transition-all duration-500 ease-out w-full max-w-md mx-auto ${
+              role ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none absolute"
+            }`}
+          >
+            <form
+              onSubmit={handleSubmit}
+              className="bg-pure-surface border border-whisper-border p-2 flex flex-col md:flex-row gap-2 w-full rounded-lg"
+            >
+              <div className="flex-grow flex items-center px-4 bg-canvas-night/50 border border-whisper-border focus-within:border-primary transition-colors rounded-md">
+                <GithubIcon className="text-muted-steel mr-3 w-4 h-4" />
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    setState("idle");
+                    setErrMsg("");
                   }}
-                >
-                  <ArrowLeft size={13} /> Back
-                </button>
-                {activeRole && (
-                  <span style={{
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    padding: "4px 12px", borderRadius: 9999,
-                    border: `1px solid ${activeRole.border}`,
-                    background: activeRole.bg,
-                    fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.7)",
-                  }}>
-                    {activeRole.icon && <span style={{ transform: "scale(0.75)", display: "inline-flex" }}>{activeRole.icon}</span>}
-                    {activeRole.label}
-                  </span>
-                )}
+                  className="bg-transparent border-none focus:ring-0 text-ghost-white font-mono w-full py-3 placeholder:text-muted-steel/50 outline-none text-sm"
+                  placeholder="GitHub username..."
+                  autoComplete="off"
+                />
               </div>
+              <button
+                type="submit"
+                disabled={state === "loading" || !input.trim()}
+                className="bg-primary text-canvas-night px-8 py-3 font-mono text-xs uppercase font-bold tracking-widest transition-transform active:translate-y-px rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {state === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : "Track"}
+              </button>
+            </form>
 
-              <form onSubmit={submit} style={{ display: "flex", gap: 8 }}>
-                <div style={{ position: "relative", flex: 1 }}>
-                  <div style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-                    <GitHubIcon width={14} height={14} style={{ color: "rgba(255,255,255,0.25)" }} />
-                  </div>
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => { setInput(e.target.value); setState("idle"); setErrMsg(""); }}
-                    placeholder="GitHub username…"
-                    autoFocus
-                    autoComplete="off"
-                    suppressHydrationWarning
-                    style={{
-                      width: "100%", height: 48,
-                      paddingLeft: 38, paddingRight: 14,
-                      borderRadius: 10,
-                      border: `1.5px solid ${state === "error" ? "rgba(248,113,113,0.5)" : "rgba(255,255,255,0.08)"}`,
-                      background: "rgba(255,255,255,0.04)",
-                      color: "#fff", fontSize: 15,
-                      fontFamily: fontMono, outline: "none",
-                      transition: "border-color 0.15s",
-                      boxSizing: "border-box",
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(62,207,142,0.45)")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = state === "error" ? "rgba(248,113,113,0.5)" : "rgba(255,255,255,0.08)")}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={state === "loading" || !input.trim()}
-                  style={{
-                    height: 48, padding: "0 22px",
-                    borderRadius: 10, border: "none",
-                    background: state === "loading" ? "rgba(62,207,142,0.55)" : ds.primary,
-                    color: ds.onPrimary, fontSize: 14, fontWeight: 600,
-                    cursor: state === "loading" || !input.trim() ? "not-allowed" : "pointer",
-                    display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
-                    transition: "background 0.13s",
-                    opacity: !input.trim() ? 0.5 : 1,
-                  }}
-                >
-                  {state === "loading"
-                    ? <><Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> Loading…</>
-                    : "Track →"}
-                </button>
-              </form>
-
-              {state === "error" && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                  style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center", marginTop: 10, fontSize: 13, color: "#f87171" }}
-                >
-                  <AlertCircle size={13} /> {errMsg}
-                </motion.div>
-              )}
-
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* Bottom bar */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.4 }}
-        style={{
-          position: "fixed", bottom: 0, left: 0, right: 0,
-          display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-          padding: "14px 24px 18px",
-          background: "linear-gradient(to top, rgba(23,23,23,0.95) 70%, transparent)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-          <a
-            href="https://github.com/PRODHOSH"
-            target="_blank" rel="noopener noreferrer"
-            style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 12px", borderRadius: ds.rFull, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}
-          >
-            <Image src="https://avatars.githubusercontent.com/PRODHOSH" alt="PRODHOSH" width={22} height={22} unoptimized style={{ borderRadius: "50%", display: "block" }} />
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
-              Built by <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>@PRODHOSH</span>
-            </span>
-          </a>
-
-          <a
-            href={REPO_URL} target="_blank" rel="noopener noreferrer"
-            style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", padding: "6px 14px", borderRadius: ds.rFull, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", fontSize: 12, fontWeight: 500, color: "rgba(255,255,255,0.45)", transition: "all 0.15s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(202,138,4,0.5)"; e.currentTarget.style.color = "#fbbf24"; e.currentTarget.style.background = "rgba(202,138,4,0.06)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "rgba(255,255,255,0.45)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
-          >
-            <Star size={13} /> Star on GitHub
-          </a>
-
-          <SubscribeButton />
+            <div className="mt-4 flex justify-center items-center gap-2 font-mono text-[10px] text-muted-steel/60">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  state === "error"
+                    ? "bg-red-500"
+                    : state === "success"
+                    ? "bg-green-500 animate-pulse"
+                    : "bg-primary animate-pulse"
+                }`}
+              ></span>
+              <span className="tracking-widest uppercase">
+                {state === "error"
+                  ? errMsg
+                  : state === "success"
+                  ? "USER LOCATED. REDIRECTING..."
+                  : state === "loading"
+                  ? "FETCHING TELEMETRY..."
+                  : "AWAITING SELECTION PARAMETERS"}
+              </span>
+            </div>
+          </div>
         </div>
+      </main>
 
-        <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.2)", textAlign: "center" }}>
-          Not affiliated with GirlScript Summer of Code or GirlScript Foundation ·{" "}
-          <a href="/terms" style={{ color: "rgba(255,255,255,0.3)", textDecoration: "underline" }}>Terms &amp; Privacy</a>
-        </p>
-      </motion.div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <HomeFooter />
     </div>
-  );
-}
-
-function RoleCard({ role, onSelect }: { role: typeof ROLES[number]; onSelect: (r: Role) => void }) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <button
-      onClick={() => onSelect(role.id)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: "flex", alignItems: "flex-start", gap: 14,
-        padding: "16px 18px", borderRadius: 12, cursor: "pointer",
-        background: hovered ? role.hoverBg : role.bg,
-        border: `1.5px solid ${hovered ? role.hoverBorder : role.border}`,
-        textAlign: "left", transition: "all 0.15s", width: "100%",
-      }}
-    >
-      <div style={{
-        width: 38, height: 38, borderRadius: 10,
-        background: hovered ? role.hoverBg : role.bg,
-        border: `1px solid ${role.border}`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        flexShrink: 0, marginTop: 1,
-        transition: "all 0.15s",
-      }}>
-        {role.icon}
-      </div>
-      <div>
-        <div style={{ fontSize: 15, fontWeight: 600, color: "#fff", marginBottom: 3 }}>{role.label}</div>
-        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.45 }}>{role.desc}</div>
-      </div>
-      <div style={{ marginLeft: "auto", alignSelf: "center", color: "rgba(255,255,255,0.2)", fontSize: 18, flexShrink: 0 }}>›</div>
-    </button>
   );
 }
