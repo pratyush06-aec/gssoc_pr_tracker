@@ -2,7 +2,16 @@
 
 import React, { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { UserSearch, ShieldCheck, Loader2, AlertCircle } from "lucide-react";
+
+const GalaxyBackground = dynamic(
+  () =>
+    import("@/components/landing/GalaxyBackground").then(
+      (m) => m.GalaxyBackground
+    ),
+  { ssr: false }
+);
 
 const GithubIcon = ({ className }: { className?: string }) => (
   <svg
@@ -83,6 +92,11 @@ export default function HomePage() {
 
   return (
     <div className="bg-canvas-night font-sans overflow-x-hidden min-h-screen flex flex-col relative text-ghost-white">
+      {/* Three.js WebGPU Galaxy Background */}
+      <GalaxyBackground className="fixed inset-0 z-0" />
+
+      {/* Overlay for content readability */}
+      <div className="fixed inset-0 z-[1] bg-canvas-night/50 pointer-events-none" />
       {/* What's new banner */}
       {showBanner && (
         <div className="fixed top-0 left-0 right-0 z-[60] bg-primary/10 border-b border-primary/20 px-5 py-2 flex items-center justify-center gap-3 backdrop-blur-md">
@@ -106,15 +120,11 @@ export default function HomePage() {
         </div>
       )}
 
-      <HomeNavbar />
+      <div className="relative z-10">
+        <HomeNavbar />
+      </div>
 
-      <main className="flex-1 flex flex-col items-center justify-center relative px-8 py-12">
-        {/* Structural Background Accents */}
-        <div className="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
-          <div className="absolute top-0 right-0 w-1/3 h-full border-l border-whisper-border"></div>
-          <div className="absolute bottom-1/4 left-0 w-full h-px bg-whisper-border"></div>
-          <div className="absolute top-1/3 left-1/4 w-[1px] h-1/2 bg-whisper-border"></div>
-        </div>
+      <main className="flex-1 flex flex-col items-center justify-center relative px-8 py-12 z-10">
 
         {/* Content Canvas */}
         <div className="max-w-2xl w-full text-center z-10 flex flex-col items-center">
@@ -237,7 +247,9 @@ export default function HomePage() {
         </div>
       </main>
 
-      <HomeFooter />
+      <div className="relative z-10">
+        <HomeFooter />
+      </div>
     </div>
   );
 }
