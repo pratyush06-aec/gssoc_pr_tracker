@@ -19,12 +19,18 @@ export function ClickExplosion() {
 
     // Tweakables for the explosion
     const emitterSize = 60;
-    const dotQuantity = 50; // 20 snowflakes per click
-    const dotSizeMax = 30;
-    const dotSizeMin = 10;
+    const dotQuantity = 20; // 50 snowflakes per click
+    const dotSizeMax = 50; // Increased size
+    const dotSizeMin = 20; // Increased size
     const speed = 2;
 
     const handleClick = (e: MouseEvent) => {
+      // Prevent explosion if clicking on interactive elements
+      const target = e.target as HTMLElement;
+      if (target.closest("button, a, input, select, textarea, [role='button'], svg, .icon")) {
+        return;
+      }
+
       // Create a temporary wrapper for this specific explosion
       const explosion = document.createElement("div");
       explosion.style.cssText = `position:absolute; left:${e.clientX}px; top:${e.clientY}px; overflow:visible; z-index:10000; pointer-events:none;`;
@@ -51,7 +57,7 @@ export function ClickExplosion() {
         const angle = Math.random() * Math.PI * 2; // random direction in radians
         const length = Math.random() * (emitterSize / 2 - size / 2);
 
-        // Initial state
+        // Initial state: place dot within emitter and size it
         gsap.set(dot, {
           x: Math.cos(angle) * length,
           y: Math.sin(angle) * length,
@@ -60,22 +66,20 @@ export function ClickExplosion() {
           xPercent: -50,
           yPercent: -50,
           force3D: true,
-          rotation: Math.random() * 360,
+          rotation: Math.random() * 360, // Keep random rotation for snowflakes
           opacity: 1
         });
 
-        const duration = 0.6 + Math.random() * 0.4; // 0.6 to 1.0 seconds
-        
-        // Random spin direction and amount
         const spin = (Math.random() < 0.5 ? -1 : 1) * (90 + Math.random() * 270);
+        const duration = 1 + Math.random();
 
-        // Animate outward and spin (Fallback for Physics2DPlugin)
+        // Animate outward using the exact fallback physics logic requested
         tl.to(
           dot,
           {
-            x: Math.cos(angle) * length * (3 + Math.random() * speed * 3),
-            y: Math.sin(angle) * length * (3 + Math.random() * speed * 3),
-            rotation: `+=${spin}`,
+            x: Math.cos(angle) * length * 6,
+            y: Math.sin(angle) * length * 6,
+            rotation: `+=${spin}`, // Spin while moving out
             duration: duration,
             ease: "power2.out"
           },
@@ -84,10 +88,10 @@ export function ClickExplosion() {
           dot,
           {
             opacity: 0,
-            duration: duration * 0.5,
+            duration: 0.2,
             ease: "power2.inOut"
           },
-          duration * 0.5 // Start fading halfway through
+          0.7
         );
       }
     };
