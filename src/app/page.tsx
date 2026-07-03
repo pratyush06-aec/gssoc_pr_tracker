@@ -2,6 +2,7 @@
 
 import React, { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { UserSearch, ShieldCheck, Loader2, AlertCircle } from "lucide-react";
 
@@ -187,6 +188,16 @@ export default function HomePage() {
                 Monitor project health, review PRs, and manage contributor workflow.
               </p>
             </button>
+          </div>
+
+          {/* Validate PR Link */}
+          <div className="mt-8 mb-4">
+            <Link 
+              href="/validate" 
+              className="font-mono text-sm tracking-widest text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-2"
+            >
+              or validate a specific PR &rarr;
+            </Link>
           </div>
 
           {/* Input Section */}
