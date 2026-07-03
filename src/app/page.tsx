@@ -194,7 +194,7 @@ export default function HomePage() {
           <div className="mt-8 mb-4">
             <Link 
               href="/validate" 
-              className="font-mono text-sm tracking-widest text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-2"
+              className="font-mono text-sm tracking-widest text-primary hover:text-primary transition-all inline-flex items-center gap-2 bg-canvas-night/60 px-6 py-3 border border-whisper-border rounded-full backdrop-blur-md shadow-lg shadow-black/20 hover:border-primary/50 hover:bg-canvas-night/80"
             >
               or validate a specific PR &rarr;
             </Link>
