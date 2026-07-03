@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Star, Bell } from "lucide-react";
 import Image from "next/image";
 import { HomePointsGuide } from "@/components/HomePointsGuide";
+import { SubscribeButton } from "@/components/SubscribeModal";
 
 export interface HomeNavbarProps {}
 
@@ -36,12 +37,7 @@ export function HomeNavbar({}: Readonly<HomeNavbarProps>) {
             <Star size={14} />
             <span>Star</span>
           </Link>
-          <button
-            className="font-mono text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 active:translate-y-px transition-all rounded-md flex items-center gap-2"
-          >
-            <Bell size={12} />
-            Get alerts
-          </button>
+          <SubscribeButton />
         </div>
       </div>
     </nav>
