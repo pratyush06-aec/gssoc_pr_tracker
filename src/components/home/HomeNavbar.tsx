@@ -1,7 +1,9 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import { Star, Bell } from "lucide-react";
 import Image from "next/image";
+import { HomePointsGuide } from "@/components/HomePointsGuide";
 
 export interface HomeNavbarProps {}
 
@@ -14,9 +16,7 @@ export function HomeNavbar({}: Readonly<HomeNavbarProps>) {
             GSSoC Tracker
           </Link>
           <div className="hidden md:flex font-mono text-[10px] font-bold uppercase tracking-widest">
-            <Link href="/terms" className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary/5 border border-primary/10 text-primary/80 hover:text-primary hover:bg-primary/10 transition-colors">
-              Point System
-            </Link>
+            <HomePointsGuide />
           </div>
         </div>
         <div className="flex items-center gap-6">

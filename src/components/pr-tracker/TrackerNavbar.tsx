@@ -2,10 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, GitPullRequest, Info, RefreshCw, Star, GripVertical, Shield } from "lucide-react";
+import { ArrowLeft, GitPullRequest, RefreshCw, Star, GripVertical, Shield } from "lucide-react";
 import { LiveClock } from "@/components/pr-tracker/LiveClock";
 import { motion, useMotionValue, animate } from "framer-motion";
-import { HomePointsGuide } from "@/components/HomePointsGuide";
 
 export function TrackerNavbar({ username }: { username: string }) {
   const x = useMotionValue(0);
@@ -79,10 +78,6 @@ export function TrackerNavbar({ username }: { username: string }) {
             
             <div className="bg-pure-surface border border-whisper-border text-muted-steel px-3 py-1 rounded-full text-xs font-mono lowercase">
               @{username}
-            </div>
-
-            <div className="hidden lg:block">
-              <HomePointsGuide />
             </div>
 
             <Link href="/terms" className="hidden lg:flex items-center gap-2 px-3 py-1.5 border border-whisper-border rounded-full text-xs text-muted-steel hover:text-ghost-white hover:bg-canvas-night/50 transition-colors">
