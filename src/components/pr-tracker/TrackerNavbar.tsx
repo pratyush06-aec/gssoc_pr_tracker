@@ -6,6 +6,7 @@ import { ArrowLeft, GitPullRequest, RefreshCw, Star, GripVertical } from "lucide
 import { LiveClock } from "@/components/pr-tracker/LiveClock";
 import { motion, useMotionValue, animate } from "framer-motion";
 import { HomePointsGuide } from "@/components/HomePointsGuide";
+import { SubscribeModal } from "@/components/SubscribeModal";
 
 export function TrackerNavbar({ username }: { username: string }) {
   const x = useMotionValue(0);
@@ -83,6 +84,10 @@ export function TrackerNavbar({ username }: { username: string }) {
 
             <div className="hidden lg:block">
               <HomePointsGuide />
+            </div>
+
+            <div className="hidden lg:block">
+              <SubscribeModal />
             </div>
 
           </div>
