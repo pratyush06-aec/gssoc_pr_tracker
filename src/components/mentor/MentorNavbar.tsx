@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Bell, Terminal } from "lucide-react";
 import Image from "next/image";
+import { HomePointsGuide } from "@/components/HomePointsGuide";
 
 export function MentorNavbar() {
   return (
@@ -19,6 +20,9 @@ export function MentorNavbar() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <div className="hidden lg:block mr-2">
+            <HomePointsGuide />
+          </div>
           <button className="text-muted-steel hover:bg-canvas-night/5 p-2 transition-all duration-200 rounded-md">
             <Bell className="w-5 h-5" />
           </button>
