@@ -2,8 +2,9 @@
 
 import React, { useState, FormEvent } from "react";
 import Link from "next/link";
-import { ArrowLeft, Sun, ShieldCheck, Link as LinkIcon, ArrowRight } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Link as LinkIcon, ArrowRight } from "lucide-react";
 import { ds } from "@/lib/ds";
+import { motion } from "framer-motion";
 
 export default function PRValidatorPage() {
   const [url, setUrl] = useState("");
@@ -31,13 +32,15 @@ export default function PRValidatorPage() {
           <ArrowLeft size={16} />
           Home
         </Link>
-        <button className="p-2 border border-whisper-border rounded-md text-muted-steel hover:text-ghost-white transition-colors bg-pure-surface">
-          <Sun size={16} />
-        </button>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-3xl mx-auto px-6 py-12 md:py-24 flex flex-col">
+      <motion.main 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="flex-1 w-full max-w-3xl mx-auto px-6 py-12 md:py-24 flex flex-col"
+      >
         {/* Title Section */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
@@ -100,7 +103,7 @@ export default function PRValidatorPage() {
             Not affiliated with GirlScript Summer of Code or GirlScript Foundation. Built for the community.
           </p>
         </div>
-      </main>
+      </motion.main>
     </div>
   );
 }
