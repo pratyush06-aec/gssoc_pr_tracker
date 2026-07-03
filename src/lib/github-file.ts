@@ -13,7 +13,7 @@ interface FileResponse {
 }
 
 async function ghFetch(path: string, opts?: RequestInit) {
-  const token = process.env.GH_TOKEN;
+  const token = process.env.GITHUB_TOKEN;
   return fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
     ...opts,
     headers: {

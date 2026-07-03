@@ -168,7 +168,7 @@ The env vars you need:
 
 | Variable | What it is |
 |---|---|
-| `GH_TOKEN` | GitHub personal access token (public_repo read only) — increases API rate limit from 60 to 5000 req/hr |
+| `GITHUB_TOKEN` | GitHub personal access token (public_repo read only) — increases API rate limit from 60 to 5000 req/hr |
 | `SMTP_USER` | Gmail address for sending alert emails |
 | `SMTP_PASS` | Gmail app password (not your account password) |
 | `NOTIFY_EMAIL` | Where feedback and admin emails are sent |

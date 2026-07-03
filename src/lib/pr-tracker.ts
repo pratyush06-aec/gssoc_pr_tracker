@@ -131,7 +131,7 @@ async function ghFetch(url: string): Promise<Response> {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
   };
-  const token = process.env.GH_TOKEN;
+  const token = process.env.GITHUB_TOKEN;
   if (token) headers.Authorization = `Bearer ${token}`;
   // cache: "no-store" here — unstable_cache on the outer function handles deduplication
   return fetch(url, { headers, cache: "no-store" });
