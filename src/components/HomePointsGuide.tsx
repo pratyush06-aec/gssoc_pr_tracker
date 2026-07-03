@@ -70,14 +70,14 @@ function Row({ label, value, accent }: { label: string; value: string; accent: s
 function Section({ title, rows, accent, isMultiplier = false, footnote }: { title: string; rows: { label: string; value: string }[]; accent: string; isMultiplier?: boolean; footnote?: string }) {
   return (
     <div style={{ marginBottom: 20 }}>
-      <p style={{ margin: "0 0 10px", fontSize: 10, fontWeight: 800, color: ds.inkMute2, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+      <p style={{ margin: "0 0 10px", fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
         {title}
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {rows.map((r) => <Row key={r.label} label={r.label} value={r.value} accent={isMultiplier ? "#1e40af" : accent} />)}
+        {rows.map((r) => <Row key={r.label} label={r.label} value={r.value} accent={isMultiplier ? "#60a5fa" : accent} />)}
       </div>
       {footnote && (
-        <p style={{ margin: "8px 0 0", fontSize: 11, color: ds.inkFaint, lineHeight: 1.5 }}>
+        <p style={{ margin: "8px 0 0", fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.5, fontStyle: "italic" }}>
           {footnote}
         </p>
       )}
@@ -89,46 +89,46 @@ function Section({ title, rows, accent, isMultiplier = false, footnote }: { titl
 function ContributorTab() {
   return (
     <div style={{ padding: "20px", overflowY: "auto" }}>
-      <Section title="Base (every approved PR)" rows={[{ label: "gssoc:approved", value: "+50 pts" }]} accent={ds.primaryDeep} />
+      <Section title="Base (every approved PR)" rows={[{ label: "gssoc:approved", value: "+50 pts" }]} accent={ds.primary} />
       <Section
         title="Difficulty"
         rows={C_DIFF}
-        accent={ds.primaryDeep}
+        accent={ds.primary}
         footnote="Multiple level labels on one PR? Only the lowest counts — labels can't be stacked to inflate points."
       />
       <Section
         title="Quality Multiplier"
         rows={C_QUAL}
-        accent={ds.primaryDeep}
+        accent={ds.primary}
         isMultiplier
         footnote="Multiple quality labels? The lowest counts. quality:exceptional also needs a substantive mentor review comment (over 30 characters) — without one it falls back to ×1.0."
       />
       <Section
         title="Type Bonus"
         rows={C_TYPES}
-        accent={ds.primaryDeep}
+        accent={ds.primary}
         footnote="Every PR is capped at 175 pts total, no matter how many labels are applied."
       />
       <Section
         title="Blocking Labels"
         rows={C_BLOCKING}
-        accent="#dc2626"
+        accent="#ef4444"
         footnote="Any of these override gssoc:approved — the PR scores 0 pts regardless of other labels."
       />
-      <div style={{ background: "rgba(62,207,142,0.05)", border: "1px solid rgba(62,207,142,0.2)", borderRadius: ds.rMd, padding: "12px 14px" }}>
-        <p style={{ margin: "0 0 6px", fontSize: 11, fontWeight: 700, color: ds.primaryDeep, letterSpacing: "0.06em", textTransform: "uppercase" }}>Example</p>
-        <p style={{ margin: "0 0 4px", fontSize: 12, color: ds.inkMute, fontFamily: fontMono }}>gssoc:approved + level:advanced + quality:exceptional + type:devops</p>
-        <p style={{ margin: 0, fontSize: 13, color: ds.ink, fontFamily: fontMono, fontWeight: 600 }}>
-          = 50 + (55 × 1.5) + 15 = <span style={{ color: ds.primaryDeep }}>147 pts</span>
+      <div style={{ background: "rgba(62,207,142,0.08)", border: "1px solid rgba(62,207,142,0.2)", borderRadius: ds.rMd, padding: "12px 14px" }}>
+        <p style={{ margin: "0 0 6px", fontSize: 11, fontWeight: 700, color: ds.primary, letterSpacing: "0.06em", textTransform: "uppercase" }}>Example</p>
+        <p style={{ margin: "0 0 4px", fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: fontMono }}>gssoc:approved + level:advanced + quality:exceptional + type:devops</p>
+        <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.85)", fontFamily: fontMono, fontWeight: 600 }}>
+          = 50 + (55 × 1.5) + 15 = <span style={{ color: ds.primary }}> 147 pts</span>
         </p>
       </div>
-      <p style={{ margin: "16px 0 0", fontSize: 11, color: ds.inkFaint, textAlign: "center", lineHeight: 1.6 }}>
+      <p style={{ margin: "16px 0 0", fontSize: 11, color: "rgba(255,255,255,0.3)", textAlign: "center", lineHeight: 1.6 }}>
         Full label guide:{" "}
         <a
           href="https://gssoc.girlscript.org/guidelines/labeling"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: ds.primaryDeep, fontWeight: 600, textDecoration: "none" }}
+          style={{ color: ds.primary, fontWeight: 600, textDecoration: "none" }}
         >
           gssoc.girlscript.org/guidelines/labeling
         </a>
@@ -140,16 +140,16 @@ function ContributorTab() {
 function MentorTab() {
   return (
     <div style={{ padding: "20px", overflowY: "auto" }}>
-      <Section title="Level Base (per reviewed PR)" rows={M_LEVELS} accent="#ca8a04" />
-      <Section title="Quality Bonus" rows={M_QUAL} accent="#ca8a04" />
-      <div style={{ background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.3)", borderRadius: ds.rMd, padding: "12px 14px" }}>
-        <p style={{ margin: "0 0 6px", fontSize: 11, fontWeight: 700, color: "#92400e", letterSpacing: "0.06em", textTransform: "uppercase" }}>Example</p>
-        <p style={{ margin: "0 0 4px", fontSize: 12, color: ds.inkMute, fontFamily: fontMono }}>level:advanced + quality:exceptional</p>
-        <p style={{ margin: 0, fontSize: 13, color: ds.ink, fontFamily: fontMono, fontWeight: 600 }}>
-          = 30 + 10 = <span style={{ color: "#ca8a04" }}>40 pts</span>
+      <Section title="Level Base (per reviewed PR)" rows={M_LEVELS} accent="#fbbf24" />
+      <Section title="Quality Bonus" rows={M_QUAL} accent="#fbbf24" />
+      <div style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.2)", borderRadius: ds.rMd, padding: "12px 14px" }}>
+        <p style={{ margin: "0 0 6px", fontSize: 11, fontWeight: 700, color: "#fbbf24", letterSpacing: "0.06em", textTransform: "uppercase" }}>Example</p>
+        <p style={{ margin: "0 0 4px", fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: fontMono }}>level:advanced + quality:exceptional</p>
+        <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.85)", fontFamily: fontMono, fontWeight: 600 }}>
+          = 30 + 10 = <span style={{ color: "#fbbf24" }}>40 pts</span>
         </p>
       </div>
-      <p style={{ margin: "16px 0 0", fontSize: 11, color: ds.inkFaint, lineHeight: 1.6 }}>
+      <p style={{ margin: "16px 0 0", fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.6 }}>
         Only PRs labeled{" "}
         <span style={{ fontFamily: fontMono, fontSize: 11 }}>mentor:username</span> +{" "}
         <span style={{ fontFamily: fontMono, fontSize: 11 }}>gssoc:approved</span> are counted.
@@ -163,29 +163,29 @@ function Modal({ onClose }: { onClose: () => void }) {
   const [tab, setTab] = useState<"contributor" | "mentor">("contributor");
 
   const tabs = [
-    { id: "contributor" as const, label: "Contributor", icon: <GitPullRequest size={12} />, accent: ds.primaryDeep, activeBg: "rgba(62,207,142,0.08)", activeBorder: ds.primaryDeep },
-    { id: "mentor"      as const, label: "Mentor",      icon: <Users size={12} />,          accent: "#ca8a04",      activeBg: "rgba(251,191,36,0.08)", activeBorder: "#ca8a04"      },
+    { id: "contributor" as const, label: "Contributor", icon: <GitPullRequest size={12} />, accent: ds.primary, activeBg: "rgba(62,207,142,0.1)", activeBorder: "rgba(62,207,142,0.4)" },
+    { id: "mentor"      as const, label: "Mentor",      icon: <Users size={12} />,          accent: "#fbbf24", activeBg: "rgba(251,191,36,0.1)", activeBorder: "rgba(251,191,36,0.4)" },
   ];
 
   return createPortal(
     <div
       onClick={onClose}
-      style={{ position: "fixed", inset: 0, background: "rgba(23,23,23,0.45)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ background: ds.canvas, borderRadius: ds.rXl, boxShadow: "0 24px 64px rgba(23,23,23,0.18)", width: "100%", maxWidth: 440, maxHeight: "92vh", overflow: "hidden", display: "flex", flexDirection: "column", animation: "slideUp 0.2s ease" }}
+        style={{ background: ds.canvasNight, borderRadius: ds.rXl, border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 24px 64px rgba(0,0,0,0.5)", width: "100%", maxWidth: 440, maxHeight: "92vh", overflow: "hidden", display: "flex", flexDirection: "column", animation: "slideUp 0.2s ease" }}
       >
         {/* Header */}
-        <div style={{ padding: "16px 20px 14px", borderBottom: `1px solid ${ds.hairlineCool}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-          <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: ds.ink }}>Points System</p>
-          <button onClick={onClose} style={{ width: 28, height: 28, border: `1px solid ${ds.hairlineCool}`, borderRadius: ds.rSm, background: "transparent", color: ds.inkMute2, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ padding: "16px 20px 14px", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "rgba(255,255,255,0.9)" }}>Points System</p>
+          <button onClick={onClose} style={{ width: 28, height: 28, border: "1px solid rgba(255,255,255,0.1)", borderRadius: ds.rSm, background: "transparent", color: "rgba(255,255,255,0.4)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <X size={14} />
           </button>
         </div>
 
         {/* Tabs */}
-        <div style={{ display: "flex", gap: 6, padding: "10px 20px 0", borderBottom: `1px solid ${ds.hairlineCool}`, flexShrink: 0 }}>
+        <div style={{ display: "flex", gap: 6, padding: "10px 20px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}>
           {tabs.map((t) => {
             const active = tab === t.id;
             return (
@@ -199,9 +199,9 @@ function Modal({ onClose }: { onClose: () => void }) {
                   borderLeft:   `1px solid ${active ? t.activeBorder : "transparent"}`,
                   borderRight:  `1px solid ${active ? t.activeBorder : "transparent"}`,
                   borderBottom: "none",
-                  borderRadius: `${ds.rSm} ${ds.rSm} 0 0`,
+                  borderRadius: `${ds.rSm}px ${ds.rSm}px 0 0`,
                   background: active ? t.activeBg : "transparent",
-                  color: active ? t.accent : ds.inkMute2,
+                  color: active ? t.accent : "rgba(255,255,255,0.35)",
                   marginBottom: -1,
                   transition: "all 0.12s",
                 }}
@@ -239,7 +239,7 @@ export function HomePointsGuide() {
     <>
       <button
         onClick={() => setOpen(true)}
-        style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: ds.rSm, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.45)", fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all 0.15s" }}
+        style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: ds.rFull, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.45)", fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all 0.15s" }}
         onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(62,207,142,0.4)"; e.currentTarget.style.color = ds.primary; e.currentTarget.style.background = "rgba(62,207,142,0.07)"; }}
         onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.color = "rgba(255,255,255,0.45)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
       >
