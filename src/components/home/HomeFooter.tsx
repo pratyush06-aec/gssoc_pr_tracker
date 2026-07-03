@@ -5,7 +5,7 @@ export interface HomeFooterProps {}
 
 export function HomeFooter({}: Readonly<HomeFooterProps>) {
   return (
-    <footer className="bg-transparent w-fit mx-auto py-3 px-6 mt-auto mb-6 z-10 border border-whisper-border/50 rounded-full backdrop-blur-md">
+    <footer className="bg-canvas-night/60 w-fit mx-auto py-3 px-6 mt-auto mb-6 z-10 border border-whisper-border rounded-full backdrop-blur-md shadow-lg shadow-black/20">
       <div className="flex flex-col md:flex-row justify-between items-center gap-8 md:gap-12">
         <div className="font-mono text-[10px] uppercase tracking-widest text-muted-steel">
           © 2026 TERMINAL SYSTEMS ARCHITECTURE. ALL RIGHTS RESERVED.
