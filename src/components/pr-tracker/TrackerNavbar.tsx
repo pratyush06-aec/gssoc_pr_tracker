@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, GitPullRequest, RefreshCw, Star, GripVertical, Shield } from "lucide-react";
+import { ArrowLeft, GitPullRequest, RefreshCw, Star, GripVertical } from "lucide-react";
 import { LiveClock } from "@/components/pr-tracker/LiveClock";
 import { motion, useMotionValue, animate } from "framer-motion";
 
@@ -80,10 +80,6 @@ export function TrackerNavbar({ username }: { username: string }) {
               @{username}
             </div>
 
-            <Link href="/terms" className="hidden lg:flex items-center gap-2 px-3 py-1.5 border border-whisper-border rounded-full text-xs text-muted-steel hover:text-ghost-white hover:bg-canvas-night/50 transition-colors">
-              <Shield className="w-3.5 h-3.5" />
-              Terms &amp; Privacy
-            </Link>
           </div>
         </div>
 
