@@ -1004,5 +1004,13 @@
     "role_scores": {},
     "rank_change": 5,
     "score_change": 0
+  },
+  {
+    "timestamp": "2026-08-06T14:19:09.758Z",
+    "rank": 863,
+    "score": 4761,
+    "role_scores": {},
+    "rank_change": -4,
+    "score_change": 0
   }
 ]
